@@ -1,0 +1,111 @@
+import { TaskModel } from "../dbModel";
+
+const taskDbSeeder = async () => {
+  await TaskModel.insertMany([
+    // Project One seed
+    {
+      user: "user-001",
+      taskId: "task-001",
+      phaseReferenceId: "phase-001-001",
+      taskContent: "A task in the SD Design Phase in the first project",
+      dateOfDeadline: "2020-06-01",
+      isCompleted: false,
+      isPriority: false,
+      isLapsed: false,
+    },
+    {
+      user: "user-001",
+      taskId: "task-002",
+      phaseReferenceId: "phase-001-001",
+      taskContent: "Another task",
+      dateOfDeadline: "2020-06-05",
+      isCompleted: false,
+      isPriority: false,
+      isLapsed: false,
+    },
+    {
+      user: "user-001",
+      taskId: "task-003",
+      phaseReferenceId: "phase-001-002",
+      taskContent: "First tas in Design Development",
+      dateOfDeadline: "2020-06-05",
+      isCompleted: false,
+      isPriority: false,
+      isLapsed: false,
+    },
+    {
+      user: "user-001",
+      taskId: "task-004",
+      phaseReferenceId: "phase-001-003",
+      taskContent: "Task in the CD Phase",
+      dateOfDeadline: "2020-06-05",
+      isCompleted: false,
+      isPriority: false,
+      isLapsed: false,
+    },
+    {
+      user: "user-001",
+      taskId: "task-005",
+      phaseReferenceId: "phase-001-003",
+      taskContent: "Cd na naman utang na luob",
+      dateOfDeadline: "2020-06-05",
+      isCompleted: false,
+      isPriority: false,
+      isLapsed: false,
+    },
+    //Project 2 seed
+    {
+      user: "user-001",
+      taskId: "task-006",
+      phaseReferenceId: "phase-002-001",
+      taskContent: "UX kinemelyn",
+      dateOfDeadline: "2020-06-05",
+      isCompleted: false,
+      isPriority: false,
+      isLapsed: false,
+    },
+    {
+      user: "user-001",
+      taskId: "task-007",
+      phaseReferenceId: "phase-002-001",
+      taskContent: "Kinorma UX",
+      dateOfDeadline: "2020-06-05",
+      isCompleted: false,
+      isPriority: false,
+      isLapsed: false,
+    },
+    {
+      user: "user-001",
+      taskId: "task-008",
+      phaseReferenceId: "phase-002-002",
+      taskContent: "The only task in the User Interface phase letsgetitttt",
+      dateOfDeadline: "2020-06-05",
+      isCompleted: false,
+      isPriority: false,
+      isLapsed: false,
+    },
+    // Project 3 seed
+    {
+      user: "user-001",
+      taskId: "task-009",
+      phaseReferenceId: "phase-003-001",
+      taskContent: "A task inside the collecting data phase",
+      dateOfDeadline: "2020-06-05",
+      isCompleted: false,
+      isPriority: false,
+      isLapsed: false,
+    },
+    {
+      user: "user-001",
+      taskId: "task-010",
+      phaseReferenceId: "phase-003-002",
+      taskContent: "sidesurf cake studios",
+      dateOfDeadline: "2020-06-05",
+      isCompleted: false,
+      isPriority: false,
+      isLapsed: false,
+    },
+  ]);
+};
+
+export default taskDbSeeder;
