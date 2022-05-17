@@ -34,8 +34,11 @@ router.route("/distinct").get(async (req, res, next) => {
   //   { $sort: { _id: 1 } },
   // ]);
   const trial = await TaskModel.aggregate([
+    // only getting thos with the phase reference id of this - Add other params here
+    { $match: { phaseReferenceId: "phase-001-001" } },
     {
       $project: {
+        phaseReferenceId: "$phaseReferenceId",
         taskContent: "$taskContent",
         dateOfDeadline: "$dateOfDeadline",
         isCompleted: "$isCompleted",
@@ -44,6 +47,9 @@ router.route("/distinct").get(async (req, res, next) => {
       },
     },
     {
+      // code below gets the count
+      // $group: { _id: "$dateOfDeadline", taskContent: { $sum: 1 } },
+      // code below gets all the task documents
       $group: { _id: "$dateOfDeadline", taskContent: { $push: "$$CURRENT" } },
     },
     { $sort: { _id: 1 } },

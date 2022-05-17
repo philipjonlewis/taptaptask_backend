@@ -6,6 +6,7 @@ const taskDbSeeder = async () => {
     {
       user: "user-001",
       taskId: "task-001",
+      projectReferenceId: "project-001",
       phaseReferenceId: "phase-001-001",
       taskContent: "A task in the SD Design Phase in the first project",
       dateOfDeadline: "2020-06-01",
@@ -16,6 +17,7 @@ const taskDbSeeder = async () => {
     {
       user: "user-001",
       taskId: "task-002",
+      projectReferenceId: "project-001",
       phaseReferenceId: "phase-001-001",
       taskContent: "Another task",
       dateOfDeadline: "2020-06-05",
@@ -26,6 +28,7 @@ const taskDbSeeder = async () => {
     {
       user: "user-001",
       taskId: "task-003",
+      projectReferenceId: "project-001",
       phaseReferenceId: "phase-001-002",
       taskContent: "First tas in Design Development",
       dateOfDeadline: "2020-06-05",
@@ -36,6 +39,7 @@ const taskDbSeeder = async () => {
     {
       user: "user-001",
       taskId: "task-004",
+      projectReferenceId: "project-001",
       phaseReferenceId: "phase-001-003",
       taskContent: "Task in the CD Phase",
       dateOfDeadline: "2020-06-05",
@@ -46,6 +50,7 @@ const taskDbSeeder = async () => {
     {
       user: "user-001",
       taskId: "task-005",
+      projectReferenceId: "project-001",
       phaseReferenceId: "phase-001-003",
       taskContent: "Cd na naman utang na luob",
       dateOfDeadline: "2020-06-05",
@@ -57,6 +62,7 @@ const taskDbSeeder = async () => {
     {
       user: "user-001",
       taskId: "task-006",
+      projectReferenceId: "project-002",
       phaseReferenceId: "phase-002-001",
       taskContent: "UX kinemelyn",
       dateOfDeadline: "2020-06-05",
@@ -67,6 +73,7 @@ const taskDbSeeder = async () => {
     {
       user: "user-001",
       taskId: "task-007",
+      projectReferenceId: "project-002",
       phaseReferenceId: "phase-002-001",
       taskContent: "Kinorma UX",
       dateOfDeadline: "2020-06-05",
@@ -77,6 +84,7 @@ const taskDbSeeder = async () => {
     {
       user: "user-001",
       taskId: "task-008",
+      projectReferenceId: "project-002",
       phaseReferenceId: "phase-002-002",
       taskContent: "The only task in the User Interface phase letsgetitttt",
       dateOfDeadline: "2020-06-05",
@@ -88,6 +96,7 @@ const taskDbSeeder = async () => {
     {
       user: "user-001",
       taskId: "task-009",
+      projectReferenceId: "project-003",
       phaseReferenceId: "phase-003-001",
       taskContent: "A task inside the collecting data phase",
       dateOfDeadline: "2020-06-05",
@@ -98,6 +107,7 @@ const taskDbSeeder = async () => {
     {
       user: "user-001",
       taskId: "task-010",
+      projectReferenceId: "project-003",
       phaseReferenceId: "phase-003-002",
       taskContent: "sidesurf cake studios",
       dateOfDeadline: "2020-06-05",

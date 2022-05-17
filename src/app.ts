@@ -10,6 +10,7 @@ const port = process.env.PORT || 4000;
 import projectsRoute from "./routes/projectsRoute";
 import phaseRoute from "./routes/phasesRoute";
 import taskRoute from "./routes/tasksRoute";
+import aggregationRoute from "./routes/aggregationRoute";
 
 import { databaseConnection } from "./model/dbConnection";
 databaseConnection();
@@ -50,6 +51,7 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/projects", projectsRoute);
 app.use("/phases", phaseRoute);
 app.use("/tasks", taskRoute);
+app.use("/aggregate", aggregationRoute);
 
 app.listen(port, () => {
   console.log(`App listening on port ${port}!`);

@@ -7,21 +7,21 @@ const projectDbSeeder = async () => {
       projectId: "project-001",
       projectName: "Echavez House",
       projectDescription: "Two storey house in the south of manila",
-      dateOfDeadline: "2020-01-01",
+      dateOfDeadline: "2022-07-13",
     },
     {
       user: "user-001",
       projectId: "project-002",
       projectName: "Archestimator App",
       projectDescription: "Sass app for managing construction estimates",
-      dateOfDeadline: "2020-02-01",
+      dateOfDeadline: "2022-12-25",
     },
     {
       user: "user-001",
       projectId: "project-003",
       projectName: "AWS Certification",
       projectDescription: "Study for AWS certification",
-      dateOfDeadline: "2020-03-01",
+      dateOfDeadline: "2022-10-12",
     },
   ]);
 };

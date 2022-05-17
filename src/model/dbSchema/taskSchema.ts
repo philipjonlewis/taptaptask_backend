@@ -12,6 +12,11 @@ const taskSchema = new Schema(
       required: [true, "Phase reference is required"],
       select: true,
     },
+    projectReferenceId: {
+      type: String,
+      required: [true, "Phase reference is required"],
+      select: true,
+    },
     taskContent: {
       type: String,
       required: [true, "Project name is required"],
