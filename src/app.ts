@@ -4,10 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app: Express = express();
-// url encoded is needed with form data
-app.use(express.urlencoded({ extended: true }));
-// express.json is needed when parsing json data i.e. rest
-app.use(express.json());
+
 const port = process.env.PORT || 4000;
 
 import projectsRoute from "./routes/projectsRoute";
@@ -15,18 +12,21 @@ import phaseRoute from "./routes/phasesRoute";
 import taskRoute from "./routes/tasksRoute";
 
 import { databaseConnection } from "./model/dbConnection";
-
-import { projectDbSeeder, phaseDbSeeder, taskDbSeeder } from "./model/dbSeeder";
-
 databaseConnection();
 
+import { projectDbSeeder, phaseDbSeeder, taskDbSeeder } from "./model/dbSeeder";
 // projectDbSeeder();
 // phaseDbSeeder();
 // taskDbSeeder();
 
+// url encoded is needed with form data
+app.use(express.urlencoded({ extended: true }));
+// express.json is needed when parsing json data i.e. rest
+app.use(express.json());
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_PORT,
+    origin: process.env.FRONTEND_PORT || "http://localhost:3000",
     methods: ["GET", "POST", "PATCH", "DELETE"],
     credentials: true,
   })

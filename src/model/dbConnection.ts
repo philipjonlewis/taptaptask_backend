@@ -8,7 +8,7 @@ const mongooseOptions: any = {
 const databaseConnection = async () => {
   try {
     mongoose.connect(
-      "mongodb://127.0.0.1:27017/DatetaskFrontendServer",
+      "mongodb://127.0.0.1:27017/DatetaskServer",
       mongooseOptions
     );
     console.log("Connected to the database");
