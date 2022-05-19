@@ -4,12 +4,24 @@ const router = express.Router();
 
 import TaskModel from "../model/dbModel/taskModel";
 
-router.route("/tasks/all/:projectId").get(async (req, res) => {
+router.route("/tasks/count/:projectId").get(async (req, res) => {
   const { projectId } = req.params;
 
+  let { isCompleted, isPriority, isLapsed } = req.query;
+
+  console.log(req.query);
+
+  const modelMatch = {
+    projectReferenceId: projectId,
+    ...req.query,
+  };
+
+  console.log(modelMatch);
   const allTasks = await TaskModel.aggregate([
     // only getting thos with the phase reference id of this - Add other params here
-    { $match: { projectReferenceId: projectId } },
+    {
+      $match: modelMatch,
+    },
     {
       $project: {
         phaseReferenceId: "$phaseReferenceId",
@@ -33,75 +45,23 @@ router.route("/tasks/all/:projectId").get(async (req, res) => {
   res.json(allTasks);
 });
 
-router.route("/tasks/completed/:projectId").get(async (req, res) => {
+router.route("/tasks/date/:projectId").get(async (req, res) => {
   const { projectId } = req.params;
 
-  const allTasks = await TaskModel.aggregate([
-    // only getting thos with the phase reference id of this - Add other params here
-    { $match: { projectReferenceId: projectId, isCompleted: true } },
-    {
-      $project: {
-        phaseReferenceId: "$phaseReferenceId",
-        taskContent: "$taskContent",
-        dateOfDeadline: "$dateOfDeadline",
-        isCompleted: "$isCompleted",
-        isPriority: "$isPriority",
-        isLapsed: "$isLapsed",
-      },
-    },
-    {
-      // code below gets the count
-      $group: { _id: null, taskContent: { $sum: 1 } },
-      //   $group: { _id: "$dateOfDeadline", taskContent: { $sum: 1 } },
-      // code below gets all the task documents
-      //   $group: { _id: "$dateOfDeadline", taskContent: { $push: "$$CURRENT" } },
-    },
-    { $sort: { _id: 1 } },
-  ]);
+  let { isCompleted, isPriority, isLapsed } = req.query;
 
-  res.json(allTasks);
-});
+  console.log(req.query);
 
-router.route("/tasks/lapsed/:projectId").get(async (req, res) => {
-  const { projectId } = req.params;
+  const modelMatch = {
+    projectReferenceId: projectId,
+    ...req.query,
+  };
 
-  const allTasks = await TaskModel.aggregate([
-    // only getting thos with the phase reference id of this - Add other params here
-    { $match: { projectReferenceId: projectId, isLapsed: true } },
-    {
-      $project: {
-        phaseReferenceId: "$phaseReferenceId",
-        taskContent: "$taskContent",
-        dateOfDeadline: "$dateOfDeadline",
-        isCompleted: "$isCompleted",
-        isPriority: "$isPriority",
-        isLapsed: "$isLapsed",
-      },
-    },
-    {
-      // code below gets the count
-      $group: { _id: null, taskContent: { $sum: 1 } },
-      //   $group: { _id: "$dateOfDeadline", taskContent: { $sum: 1 } },
-      // code below gets all the task documents
-      //   $group: { _id: "$dateOfDeadline", taskContent: { $push: "$$CURRENT" } },
-    },
-    { $sort: { _id: 1 } },
-  ]);
-
-  res.json(allTasks);
-});
-
-router.route("/tasks/ongoing/:projectId").get(async (req, res) => {
-  const { projectId } = req.params;
-
+  console.log(modelMatch);
   const allTasks = await TaskModel.aggregate([
     // only getting thos with the phase reference id of this - Add other params here
     {
-      $match: {
-        projectReferenceId: projectId,
-        isLapsed: false,
-        isCompleted: false,
-      },
+      $match: modelMatch,
     },
     {
       $project: {
@@ -115,10 +75,10 @@ router.route("/tasks/ongoing/:projectId").get(async (req, res) => {
     },
     {
       // code below gets the count
-      $group: { _id: null, taskContent: { $sum: 1 } },
+      // $group: { _id: null, taskContent: { $sum: 1 } },
       //   $group: { _id: "$dateOfDeadline", taskContent: { $sum: 1 } },
       // code below gets all the task documents
-      //   $group: { _id: "$dateOfDeadline", taskContent: { $push: "$$CURRENT" } },
+      $group: { _id: "$dateOfDeadline", taskContent: { $push: "$$CURRENT" } },
     },
     { $sort: { _id: 1 } },
   ]);
