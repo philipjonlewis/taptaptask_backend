@@ -18,7 +18,6 @@ router.route("/tasks/count/:projectId").get(async (req, res) => {
 
   console.log(modelMatch);
   const allTasks = await TaskModel.aggregate([
-    // only getting thos with the phase reference id of this - Add other params here
     {
       $match: modelMatch,
     },
@@ -33,11 +32,7 @@ router.route("/tasks/count/:projectId").get(async (req, res) => {
       },
     },
     {
-      // code below gets the count
       $group: { _id: null, taskContent: { $sum: 1 } },
-      //   $group: { _id: "$dateOfDeadline", taskContent: { $sum: 1 } },
-      // code below gets all the task documents
-      //   $group: { _id: "$dateOfDeadline", taskContent: { $push: "$$CURRENT" } },
     },
     { $sort: { _id: 1 } },
   ]);
@@ -45,45 +40,43 @@ router.route("/tasks/count/:projectId").get(async (req, res) => {
   res.json(allTasks);
 });
 
-router.route("/tasks/date/:projectId").get(async (req, res) => {
-  const { projectId } = req.params;
+router
+  .route("/tasks/date/:projectId/:phaseReferenceId")
+  .get(async (req, res) => {
+    const { projectId, phaseReferenceId } = req.params;
 
-  let { isCompleted, isPriority, isLapsed } = req.query;
+    const modelMatch = {
+      projectReferenceId: projectId,
+      phaseReferenceId,
+      ...req.query,
+    };
 
-  console.log(req.query);
-
-  const modelMatch = {
-    projectReferenceId: projectId,
-    ...req.query,
-  };
-
-  console.log(modelMatch);
-  const allTasks = await TaskModel.aggregate([
-    // only getting thos with the phase reference id of this - Add other params here
-    {
-      $match: modelMatch,
-    },
-    {
-      $project: {
-        phaseReferenceId: "$phaseReferenceId",
-        taskContent: "$taskContent",
-        dateOfDeadline: "$dateOfDeadline",
-        isCompleted: "$isCompleted",
-        isPriority: "$isPriority",
-        isLapsed: "$isLapsed",
+    const allTasks = await TaskModel.aggregate([
+      // only getting thos with the phase reference id of this - Add other params here
+      {
+        $match: modelMatch,
       },
-    },
-    {
-      // code below gets the count
-      // $group: { _id: null, taskContent: { $sum: 1 } },
-      //   $group: { _id: "$dateOfDeadline", taskContent: { $sum: 1 } },
-      // code below gets all the task documents
-      $group: { _id: "$dateOfDeadline", taskContent: { $push: "$$CURRENT" } },
-    },
-    { $sort: { _id: 1 } },
-  ]);
+      {
+        $project: {
+          phaseReferenceId: "$phaseReferenceId",
+          taskContent: "$taskContent",
+          dateOfDeadline: "$dateOfDeadline",
+          isCompleted: "$isCompleted",
+          isPriority: "$isPriority",
+          isLapsed: "$isLapsed",
+        },
+      },
+      {
+        // code below gets the count
+        // $group: { _id: null, taskContent: { $sum: 1 } },
+        //   $group: { _id: "$dateOfDeadline", taskContent: { $sum: 1 } },
+        // code below gets all the task documents
+        $group: { _id: "$dateOfDeadline", taskContent: { $push: "$$CURRENT" } },
+      },
+      { $sort: { _id: 1 } },
+    ]);
 
-  res.json(allTasks);
-});
+    res.json(allTasks);
+  });
 
 export default router;

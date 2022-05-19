@@ -26,13 +26,13 @@ app.use(express.urlencoded({ extended: true }));
 // express.json is needed when parsing json data i.e. rest
 app.use(express.json());
 app.use(boolParser());
-app.use(
-  cors({
-    origin: process.env.FRONTEND_PORT || "http://192.168.0.22:3000",
-    methods: ["GET", "POST", "PATCH", "DELETE"],
-    credentials: true,
-  })
-);
+// app.use(
+//   cors({
+//     origin: "/",
+//     methods: ["GET", "POST", "PATCH", "DELETE"],
+//     credentials: true,
+//   })
+// );
 
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", req.headers.origin);
