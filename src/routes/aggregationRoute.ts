@@ -79,4 +79,45 @@ router
     res.json(allTasks);
   });
 
+router
+  .route("/tasks/lapsed/:projectId/:phaseReferenceId")
+  .get(async (req, res) => {
+    const { projectId, phaseReferenceId } = req.params;
+
+    const modelMatch = {
+      projectReferenceId: projectId,
+      phaseReferenceId,
+      dateOfDeadline: {
+        $lt: new Date(),
+      },
+    };
+
+    const allTasks = await TaskModel.aggregate([
+      // only getting thos with the phase reference id of this - Add other params here
+      {
+        $match: modelMatch,
+      },
+      {
+        $project: {
+          phaseReferenceId: "$phaseReferenceId",
+          taskContent: "$taskContent",
+          dateOfDeadline: "$dateOfDeadline",
+          isCompleted: "$isCompleted",
+          isPriority: "$isPriority",
+          isLapsed: "$isLapsed",
+        },
+      },
+      {
+        // code below gets the count
+        // $group: { _id: null, taskContent: { $sum: 1 } },
+        //   $group: { _id: "$dateOfDeadline", taskContent: { $sum: 1 } },
+        // code below gets all the task documents
+        $group: { _id: "$dateOfDeadline", taskContent: { $push: "$$CURRENT" } },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+
+    res.json(allTasks);
+  });
+
 export default router;
