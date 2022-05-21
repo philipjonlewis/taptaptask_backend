@@ -4,19 +4,18 @@ const router = express.Router();
 
 import TaskModel from "../model/dbModel/taskModel";
 
-router.route("/tasks/count/:projectId").get(async (req, res) => {
-  const { projectId } = req.params;
-
-  let { isCompleted, isPriority, isLapsed } = req.query;
-
-  console.log(req.query);
+router.route("/tasks/count/:projectId/:phaseId").get(async (req, res) => {
+  const { projectId, phaseId } = req.params;
 
   const modelMatch = {
     projectReferenceId: projectId,
+    phaseRefereceId: phaseId,
+    dateOfDeadline: {
+      $gte: new Date(),
+    },
     ...req.query,
   };
 
-  console.log(modelMatch);
   const allTasks = await TaskModel.aggregate([
     {
       $match: modelMatch,
@@ -47,7 +46,10 @@ router
 
     const modelMatch = {
       projectReferenceId: projectId,
-      phaseReferenceId,
+      phaseReferenceId: phaseReferenceId,
+      dateOfDeadline: {
+        $gte: new Date(),
+      },
       ...req.query,
     };
 
@@ -58,6 +60,9 @@ router
       },
       {
         $project: {
+          user: "$user",
+          taskId: "$taskId",
+          projectReferenceId: "$projectReferenceId",
           phaseReferenceId: "$phaseReferenceId",
           taskContent: "$taskContent",
           dateOfDeadline: "$dateOfDeadline",

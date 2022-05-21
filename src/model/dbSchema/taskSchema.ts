@@ -25,8 +25,6 @@ const taskSchema = new Schema(
     },
     dateOfDeadline: { type: Date, required: true },
     isCompleted: { type: Boolean },
-    isPriority: { type: Boolean },
-    isLapsed: { type: Boolean },
   },
   { timestamps: true }
 );

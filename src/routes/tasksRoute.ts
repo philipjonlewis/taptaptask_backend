@@ -72,6 +72,20 @@ router.route("/distinct").get(async (req, res, next) => {
   res.json(trial);
 });
 
+router.route("/edit").patch(async (req, res, next) => {
+  console.log("is this hit");
+
+  const { _id, isCompleted } = req.body;
+
+  console.log(req.body);
+
+  const updatedTask = await TaskModel.findOneAndUpdate(
+    { _id: _id },
+    { isCompleted: isCompleted }
+  );
+  res.json(updatedTask);
+});
+
 router.route("/:taskId").get(async (req, res, next) => {
   const { taskId } = req.params;
 

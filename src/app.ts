@@ -26,16 +26,16 @@ app.use(express.urlencoded({ extended: true }));
 // express.json is needed when parsing json data i.e. rest
 app.use(express.json());
 app.use(boolParser());
-// app.use(
-//   cors({
-//     origin: "/",
-//     methods: ["GET", "POST", "PATCH", "DELETE"],
-//     credentials: true,
-//   })
-// );
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PATCH", "DELETE"],
+    credentials: true,
+  })
+);
 
 app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", req.headers.origin);
+  res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept"
