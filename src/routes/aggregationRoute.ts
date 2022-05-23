@@ -43,12 +43,16 @@ router
   .route("/tasks/date/:projectId/:phaseReferenceId")
   .get(async (req, res) => {
     const { projectId, phaseReferenceId } = req.params;
+    const today = new Date();
+    const yesterday = new Date(today);
+
+    yesterday.setDate(yesterday.getDate() - 1);
 
     const modelMatch = {
       projectReferenceId: projectId,
       phaseReferenceId: phaseReferenceId,
       dateOfDeadline: {
-        $gte: new Date(),
+        $gte: new Date(yesterday),
       },
       ...req.query,
     };
