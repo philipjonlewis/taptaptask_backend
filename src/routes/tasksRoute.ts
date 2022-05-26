@@ -73,17 +73,24 @@ router.route("/distinct").get(async (req, res, next) => {
 });
 
 router.route("/edit").patch(async (req, res, next) => {
-  console.log("is this hit");
+  const { taskId, isCompleted, taskContent } = req.body;
 
-  const { _id, isCompleted } = req.body;
-
-  console.log(req.body);
+  console.log("Editing Task", req.body);
 
   const updatedTask = await TaskModel.findOneAndUpdate(
-    { _id: _id },
-    { isCompleted: isCompleted }
+    { taskId: taskId },
+    req.body
   );
   res.json(updatedTask);
+});
+
+router.route("/delete").post(async (req, res, next) => {
+  const { taskId } = req.body;
+
+  console.log("Deleting Task", req.body);
+
+  const deletedTask = await TaskModel.findOneAndDelete({ taskId: taskId });
+  res.json(deletedTask);
 });
 
 router.route("/:taskId").get(async (req, res, next) => {
