@@ -53,7 +53,7 @@ router.route("/byproject/:user").get(async (req, res, next) => {
     { $sort: { _id: 1 } },
   ]);
 
-  console.log(allPhases);
+  // console.log(allPhases);
 
   res.json(allPhases);
 });
