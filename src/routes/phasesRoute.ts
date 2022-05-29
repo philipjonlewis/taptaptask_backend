@@ -22,6 +22,57 @@ router
     res.json(newPhase);
   });
 
+router.route("/byproject/:user").get(async (req, res, next) => {
+  const { user } = req.params;
+  // console.log(user);
+  const modelMatch = {
+    user,
+  };
+
+  const allPhases = await PhaseModel.aggregate([
+    {
+      $match: modelMatch,
+    },
+    {
+      $project: {
+        user: "$user",
+        phaseId: "$phaseId",
+        projectReferenceId: "$projectReferenceId",
+        phaseName: "$phaseName",
+        phaseOrder: "$phaseOrder",
+      },
+    },
+    {
+      $group: { _id: "$projectReferenceId", phaseList: { $push: "$$CURRENT" } },
+    },
+    // { $unwind: "$phaseList" },
+    // { $sort: { "phaseList.phaseOrder": 1 } },
+    // {
+    //   $group: { _id: "$projectReferenceId", phaseList: { $push: "$phaseList" } },
+    // },
+    { $sort: { _id: 1 } },
+  ]);
+
+  console.log(allPhases);
+
+  res.json(allPhases);
+});
+
+router.route("/changeorder").patch(async (req, res, next) => {
+  console.log(req.body);
+  console.log("Lahat na lang");
+
+  req.body.map(async (phase: any) => {
+    await PhaseModel.findOneAndUpdate(
+      { phaseId: phase.phaseId },
+      {
+        phaseOrder: phase.phaseOrder,
+      }
+    );
+  });
+  res.send("hello");
+});
+
 router.route("/:phaseId").get(async (req, res, next) => {
   const { phaseId } = req.params;
 

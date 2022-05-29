@@ -18,6 +18,10 @@ const phaseSchema = new Schema(
       select: true,
       maxlength: 64,
     },
+    phaseOrder: {
+      type: Number,
+      select: true,
+    },
   },
   { timestamps: true }
 );

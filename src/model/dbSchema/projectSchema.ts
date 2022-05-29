@@ -16,7 +16,7 @@ const projectSchema = new Schema(
     projectDescription: {
       type: String,
       required: false,
-      select: false,
+      select: true,
       maxlength: 128,
     },
     dateOfDeadline: { type: Date, required: false },

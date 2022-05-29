@@ -13,6 +13,8 @@ router
   .post(async (req, res, next) => {
     const task = req.body;
 
+    console.log("Adding New Task", req.body);
+
     const newTask = await new TaskModel(task);
 
     newTask.save();
