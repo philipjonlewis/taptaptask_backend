@@ -87,11 +87,11 @@ router.route("/edit").patch(async (req, res, next) => {
 });
 
 router.route("/delete").post(async (req, res, next) => {
-  const { taskId } = req.body;
+  const { id } = req.body;
 
   console.log("Deleting Task", req.body);
 
-  const deletedTask = await TaskModel.findOneAndDelete({ taskId: taskId });
+  const deletedTask = await TaskModel.findOneAndDelete({ taskId: id });
   res.json(deletedTask);
 });
 

@@ -1,4 +1,5 @@
 import express from "express";
+import { TaskModel } from "../model/dbModel";
 
 const router = express.Router();
 
@@ -59,9 +60,6 @@ router.route("/byproject/:user").get(async (req, res, next) => {
 });
 
 router.route("/changeorder").patch(async (req, res, next) => {
-  console.log(req.body);
-  console.log("Lahat na lang");
-
   req.body.map(async (phase: any) => {
     await PhaseModel.findOneAndUpdate(
       { phaseId: phase.phaseId },
@@ -71,6 +69,20 @@ router.route("/changeorder").patch(async (req, res, next) => {
     );
   });
   res.send("hello");
+});
+
+router.route("/delete").post(async (req, res, next) => {
+  console.log(req.body);
+
+  await PhaseModel.findOneAndDelete({ phaseId: await req.body.id });
+  await TaskModel.deleteMany({ phaseReferenceId: await req.body.id });
+
+  res.send("hello");
+});
+
+router.route("/trial/delete").delete(async (req, res, next) => {
+  console.log(req.body);
+  res.json(req.body);
 });
 
 router.route("/:phaseId").get(async (req, res, next) => {
