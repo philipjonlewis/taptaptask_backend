@@ -10,14 +10,21 @@ const router = express.Router();
 import TaskModel from "../model/dbModel/taskModel";
 
 import { newTaskDataValidation } from "../middleware/validation/taskValidation";
+import { newTaskDataSanitizer } from "../middleware/sanitization/taskSanitizer";
+import { userCredentialVerification } from "../middleware/verification/userCredentialVerification";
+import { createNewTaskDataController } from "../controllers/taskController";
+
+// Add a rate limiter middleware here
 
 router.route("/create").post([
-  newTaskDataValidation,
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { newTaskData } = res.locals;
-
-    res.send(newTaskData);
+  (req: Request, res: Response, next: NextFunction) => {
+    res.set("Access-Control-Allow-Origin", "*");
+    next();
   },
+  newTaskDataSanitizer,
+  newTaskDataValidation,
+  userCredentialVerification,
+  createNewTaskDataController,
 ]);
 
 // router.route("/create").post([

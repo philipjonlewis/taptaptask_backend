@@ -36,7 +36,7 @@ const tasketteDataValidationSchema = Joi.array().items(
 const newTaskDataValidation = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const newTaskData = req.body;
+      const {newTaskData} = res.locals;
 
       if (!Array.isArray(newTaskData)) {
         throw new ErrorHandler(409, "Invalid Data structure", newTaskData);
@@ -51,9 +51,8 @@ const newTaskDataValidation = asyncHandler(
           debug: true,
           warnings: true,
         })
-        .then((validatedValue) => {
-          // validatedValue = {value,warning,debug}
-          res.locals.newTaskData = [...validatedValue.value];
+        .then(({ value, warning, debug }) => {
+          res.locals.newTaskData = [...value];
           return next();
         })
         .catch((error) => {
@@ -61,7 +60,6 @@ const newTaskDataValidation = asyncHandler(
             409,
             "There seems to be something wrong with the following fields",
             error.details.map((err: any) => {
-              //   return { message: err.message, path: err.path[0] };
               return err;
             })
           );

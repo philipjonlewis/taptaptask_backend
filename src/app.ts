@@ -13,8 +13,6 @@ import cookieParser from "cookie-parser";
 
 import csrf from "csurf";
 
-const csrfProtection = csrf({ cookie: true });
-
 import helmet from "helmet";
 
 import cors from "cors";
@@ -38,6 +36,7 @@ import { projectDbSeeder, phaseDbSeeder, taskDbSeeder } from "./model/dbSeeder";
 // projectDbSeeder();
 // phaseDbSeeder();
 // taskDbSeeder();
+app.disable("x-powered-by");
 
 app.set("trust proxy", true);
 
@@ -48,41 +47,47 @@ app.use(express.urlencoded({ extended: true }));
 // express.json is needed when parsing json data i.e. rest
 app.use(express.json());
 
-app.use(cookieParser(process.env.WALKERS_SHORTBREAD));
+app.use(cookieParser());
 
 app.use(boolParser());
 
 app.use(helmet());
 
-app.use(nocache());
+// app.use(nocache());
 
 app.set("etag", false);
 
-// app.use(csrfProtection);
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  // res.header(
+  //   "Access-Control-Allow-Headers",
+  //   "*, X-Requested-With, Content-Type, Accept"
+  // );
+  next();
+});
+
+// app.use((req, res, next) => {
+//   res.cookie("XSRF-TOKEN", req.csrfToken());
+//   next();
+// });
 
 app.use(
   cors({
-    origin: "*",
+    origin: "http://192.168.0.22:3000",
     methods: ["GET", "POST", "PATCH", "DELETE"],
     credentials: true,
   })
 );
 
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
-});
-
 databaseConnection();
 
 app.get("/", (req: Request, res: Response) => {
-  //   const refreshCookie = req.signedCookies["datetask-refresh"];
-  //   console.log(refreshCookie);
-  res.send("home page");
+  res.send("ome");
+});
+
+app.use(csrf({ cookie: true }));
+app.get("/getCSRFToken", (req, res) => {
+  res.json({ CSRFToken: req.csrfToken() });
 });
 
 app.use("/projects", projectsRoute);
