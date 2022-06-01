@@ -1,105 +1,60 @@
-import express from "express";
+import express, {
+  Request,
+  Response,
+  NextFunction,
+  RequestHandler,
+} from "express";
 
 const router = express.Router();
 
 import TaskModel from "../model/dbModel/taskModel";
 
-router
-  .route("/")
-  .get(async (req, res, next) => {
-    const tasks = await TaskModel.find({});
-    res.json(tasks);
-  })
-  .post(async (req, res, next) => {
-    const task = req.body;
+import { newTaskDataValidation } from "../middleware/validation/taskValidation";
 
-    console.log("Adding New Task", req.body);
+router.route("/create").post([
+  newTaskDataValidation,
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { newTaskData } = res.locals;
 
-    const newTask = await new TaskModel(task);
+    res.send(newTaskData);
+  },
+]);
 
-    newTask.save();
+// router.route("/create").post([
+//   createNewTaskValidator,
+//   async (req, res, next) => {
+//     // const task = req.body;
 
-    console.log("this route is working");
+//     // const newTask = await TaskModel.insertMany([...task]);
+//     // console.log(newTask);
+//     // // newTask.save();
 
-    res.json(newTask);
-  });
+//     // res.json(newTask);
 
-router.route("/distinct").get(async (req, res, next) => {
-  // const trial = await TaskModel.aggregate([
-  //   {
-  //     $project: {
-  //       taskContent: "$taskContent",
-  //       dateOfDeadline: "$dateOfDeadline",
-  //     },
-  //   },
-  //   { $group: { _id: "$dateOfDeadline", tasks: { $sum: 1 } } },
-  //   { $sort: { _id: 1 } },
-  // ]);
-  const trial = await TaskModel.aggregate([
-    // only getting thos with the phase reference id of this - Add other params here
-    { $match: { phaseReferenceId: "phase-001-001" } },
-    {
-      $project: {
-        phaseReferenceId: "$phaseReferenceId",
-        taskContent: "$taskContent",
-        dateOfDeadline: "$dateOfDeadline",
-        isCompleted: "$isCompleted",
-        isPriority: "$isPriority",
-        isLapsed: "$isLapsed",
-      },
-    },
-    {
-      // code below gets the count
-      // $group: { _id: "$dateOfDeadline", taskContent: { $sum: 1 } },
-      // code below gets all the task documents
-      $group: { _id: "$dateOfDeadline", taskContent: { $push: "$$CURRENT" } },
-    },
-    { $sort: { _id: 1 } },
-  ]);
-  // console.log(trial);
-  // TaskModel.collection.aggregate([
-  //   { $project: { taskContent: "$taskContent" } },
-  //   { $group: { _id: "$dateOfDeadline", number: { $sum: 1 } } },
-  //   { $sort: { _id: 1 } },
-  // ]);
+//     res.send("this is hit");
+//   },
+// ]);
 
-  // TaskModel.collection.distinct(
-  //   "dateOfDeadline",
-  //   function (err: any, dates: any) {
-  //     res.send(dates);
-  //     console.log(dates);
-  //   }
-  // );
-
-  res.json(trial);
+router.route("/read?:taskId").get(async (req, res, next) => {
+  const tasks = await TaskModel.find({ ...req.query });
+  res.json(tasks);
 });
 
-router.route("/edit").patch(async (req, res, next) => {
-  const { taskId, isCompleted, taskContent } = req.body;
+router.route("/update").patch(async (req, res, next) => {
+  const updateValue = req.body;
 
-  console.log("Editing Task", req.body);
+  console.log("parameters to use to update", updateValue[0]);
+  console.log("value to be updated", updateValue[1]);
 
-  const updatedTask = await TaskModel.findOneAndUpdate(
-    { taskId: taskId },
-    req.body
-  );
-  res.json(updatedTask);
+  res.send(updateValue);
 });
 
-router.route("/delete").post(async (req, res, next) => {
-  const { id } = req.body;
-
-  console.log("Deleting Task", req.body);
-
-  const deletedTask = await TaskModel.findOneAndDelete({ taskId: id });
-  res.json(deletedTask);
+router.route("/delete").delete(async (req, res, next) => {
+  res.send(req.body);
 });
 
-router.route("/:taskId").get(async (req, res, next) => {
-  const { taskId } = req.params;
-
-  const task = await TaskModel.findOne({ taskId });
-  res.json(task);
-});
+// router.use((error: any, req: any, res: any, next: any) => {
+//   res.send("error handler");
+// });
 
 export default router;
