@@ -1,47 +1,43 @@
-import express, {
-  Request,
-  Response,
-  NextFunction,
-  RequestHandler,
-} from "express";
+import { Router } from "express";
 
-const router = express.Router();
-
-import TaskModel from "../model/dbModel/taskModel";
-
+const router = Router();
 
 import {
   createTaskDataSanitizer,
   readTaskDataSanitizer,
   updateTaskDataSanitizer,
-  deleteTaskDataSanitizer
+  deleteTaskDataSanitizer,
 } from "../middleware/sanitization/taskSanitizer";
 
 import {
-  createTaskDataValidation,
-  updateTaskDataValidation,
-  readTaskDataValidation,
-  deleteTaskDataValidation
+  createTaskDataValidator,
+  updateTaskDataValidator,
+  readTaskDataValidator,
+  deleteTaskDataValidator,
 } from "../middleware/validation/taskValidation";
 
-
-import { userCredentialVerification } from "../middleware/verification/userCredentialVerification";
+import { userCredentialsVerifier } from "../middleware/verification/userCredentialsVerifier";
 
 import {
   createNewTaskDataController,
   readTaskDataController,
   updateTaskDataController,
-  deleteTaskDataController
+  deleteTaskDataController,
 } from "../controllers/taskControllers";
 
 // Add a rate limiter middleware here
+
+// router.use([
+//   refreshCookieAuthentication,
+//   accessCookieAuthentication
+// ]);
 
 router
   .route("/create")
   .post([
     createTaskDataSanitizer,
-    createTaskDataValidation,
-    userCredentialVerification,
+    createTaskDataValidator,
+    userCredentialsVerifier,
     createNewTaskDataController,
   ]);
 
@@ -49,8 +45,8 @@ router
   .route("/read?:taskId")
   .get([
     readTaskDataSanitizer,
-    readTaskDataValidation,
-    userCredentialVerification,
+    readTaskDataValidator,
+    userCredentialsVerifier,
     readTaskDataController,
   ]);
 
@@ -58,8 +54,8 @@ router
   .route("/update")
   .patch([
     updateTaskDataSanitizer,
-    updateTaskDataValidation,
-    userCredentialVerification,
+    updateTaskDataValidator,
+    userCredentialsVerifier,
     updateTaskDataController,
   ]);
 
@@ -67,8 +63,8 @@ router
   .route("/delete")
   .delete([
     deleteTaskDataSanitizer,
-    deleteTaskDataValidation,
-    userCredentialVerification,
+    deleteTaskDataValidator,
+    userCredentialsVerifier,
     deleteTaskDataController,
   ]);
 

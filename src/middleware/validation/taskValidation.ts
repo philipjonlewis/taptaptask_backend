@@ -10,10 +10,10 @@ import Joi, { string } from "joi";
 // import sanitizeHtml from "sanitize-html";
 
 import {
-  createNewTaskDataValidationSchema,
+  createNewTaskDataValidatorSchema,
   readTaskValidationSchema,
   updateTaskParametersValidationSchema,
-  updateTaskDataValidationSchema,
+  updateTaskDataValidatorSchema,
   deleteTaskParametersValidationSchema,
 } from "./validationSchemas";
 
@@ -30,7 +30,7 @@ const validationOptions = {
   warnings: true,
 };
 
-const createTaskDataValidation = asyncHandler(
+const createTaskDataValidator = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { newTaskData } = res.locals;
@@ -39,7 +39,7 @@ const createTaskDataValidation = asyncHandler(
         throw new ErrorHandler(409, "Invalid Data structure", newTaskData);
       }
 
-      await createNewTaskDataValidationSchema
+      await createNewTaskDataValidatorSchema
         .validateAsync(newTaskData, validationOptions)
         .then(({ value, warning, debug }: any) => {
           res.locals.newTaskData = [...value];
@@ -60,7 +60,7 @@ const createTaskDataValidation = asyncHandler(
   }
 ) as RequestHandler;
 
-const readTaskDataValidation = asyncHandler(
+const readTaskDataValidator = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { sanitizedTaskId } = res.locals;
@@ -91,7 +91,7 @@ const readTaskDataValidation = asyncHandler(
   }
 ) as RequestHandler;
 
-const updateTaskDataValidation = asyncHandler(
+const updateTaskDataValidator = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { updateParameters, updateData } = res.locals.sanitizedData;
@@ -111,7 +111,7 @@ const updateTaskDataValidation = asyncHandler(
           );
         });
 
-      await updateTaskDataValidationSchema
+      await updateTaskDataValidatorSchema
         .validateAsync(updateData, validationOptions)
         .then(({ value, warning, debug }: any) => {
           res.locals.updateData = { ...value };
@@ -140,7 +140,7 @@ const updateTaskDataValidation = asyncHandler(
   }
 ) as RequestHandler;
 
-const deleteTaskDataValidation = asyncHandler(
+const deleteTaskDataValidator = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { sanitizedDeleteDataParams } = res.locals;
@@ -169,8 +169,8 @@ const deleteTaskDataValidation = asyncHandler(
 ) as RequestHandler;
 
 export {
-  createTaskDataValidation,
-  readTaskDataValidation,
-  updateTaskDataValidation,
-  deleteTaskDataValidation,
+  createTaskDataValidator,
+  readTaskDataValidator,
+  updateTaskDataValidator,
+  deleteTaskDataValidator,
 };
