@@ -1,4 +1,5 @@
 import { Request, Response, RequestHandler, NextFunction } from "express";
+import { rmSync } from "fs";
 
 import sanitizeHtml from "sanitize-html";
 import asyncHandler from "../../handlers/asyncHandler";
@@ -12,23 +13,22 @@ const sanitizationOptions = {
   },
 };
 
-const createTaskDataSanitizer = asyncHandler(
+const createPhaseDataSanitizer = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      let newTaskData = req.body;
+      let newPhaseData = req.body;
 
-      newTaskData = newTaskData.map((taskData: any) => {
+      newPhaseData = newPhaseData.map((phaseName: any) => {
         return {
-          ...taskData,
-          taskContent: sanitizeHtml(
-            taskData.taskContent.toString(),
+          ...phaseName,
+          phaseName: sanitizeHtml(
+            phaseName.phaseName.toString(),
             sanitizationOptions
           ).trim(),
         };
       });
 
-      res.locals.sanitizedNewTaskData = [...newTaskData];
-
+      res.locals.sanitizedNewPhaseData = [...newPhaseData];
       return next();
     } catch (error: any) {
       throw new ErrorHandler(500, error.message, {});
@@ -36,19 +36,19 @@ const createTaskDataSanitizer = asyncHandler(
   }
 ) as RequestHandler;
 
-const readTaskDataSanitizer = asyncHandler(
+const readPhaseDataSanitizer = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      let { taskId } = req.query;
-
-      if (!taskId) {
-        res.locals.taskId = false;
+      let { phaseId } = req.query;
+      if (!phaseId) {
+        res.locals.sanitizedPhaseId = false;
         return next();
       }
 
-      taskId = sanitizeHtml(taskId.toString(), sanitizationOptions).trim();
+      phaseId = sanitizeHtml(phaseId.toString(), sanitizationOptions).trim();
 
-      res.locals.sanitizedReadTaskDataId = { taskId };
+      res.locals.sanitizedReadPhaseDataId = phaseId;
+
       return next();
     } catch (error: any) {
       throw new ErrorHandler(500, error.message, {});
@@ -56,30 +56,30 @@ const readTaskDataSanitizer = asyncHandler(
   }
 ) as RequestHandler;
 
-const updateTaskDataSanitizer = asyncHandler(
+const updatePhaseDataSanitizer = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      let [updateTaskDataParameters, updateTaskDataContent] = req.body;
+      let [updatePhaseDataParameters, updatePhaseDataContent] = req.body;
 
-      if (!updateTaskDataContent.taskContent) {
-        res.locals.sanitizedData = {
-          updateTaskDataParameters,
-          updateTaskDataContent,
+      if (!updatePhaseDataContent.phaseName) {
+        res.locals.sanitizedUpdatePhaseData = {
+          updatePhaseDataParameters,
+          updatePhaseDataContent,
         };
         return next();
       }
 
-      updateTaskDataContent = {
-        ...updateTaskDataContent,
-        taskContent: sanitizeHtml(
-          updateTaskDataContent.taskContent.toString().trim(),
+      updatePhaseDataContent = {
+        ...updatePhaseDataContent,
+        phaseName: sanitizeHtml(
+          updatePhaseDataContent.phaseName.toString().trim(),
           sanitizationOptions
         ),
       };
 
-      res.locals.sanitizedUpdateTaskData = {
-        updateTaskDataParameters,
-        updateTaskDataContent,
+      res.locals.sanitizedUpdatePhaseData = {
+        updatePhaseDataParameters,
+        updatePhaseDataContent,
       };
 
       return next();
@@ -89,22 +89,23 @@ const updateTaskDataSanitizer = asyncHandler(
   }
 ) as RequestHandler;
 
-const deleteTaskDataSanitizer = asyncHandler(
+const deletePhaseDataSanitizer = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { user, taskId, projectReferenceId, phaseReferenceId } = req.body;
+      const { user, phaseId, projectReferenceId } = req.body;
 
       const sanitizedDeleteDataParams = {
         user: sanitizeHtml(user, sanitizationOptions),
-        taskId: sanitizeHtml(taskId, sanitizationOptions),
+        phaseId: sanitizeHtml(phaseId, sanitizationOptions),
         projectReferenceId: sanitizeHtml(
           projectReferenceId,
           sanitizationOptions
         ),
-        phaseReferenceId: sanitizeHtml(phaseReferenceId, sanitizationOptions),
       };
 
-      res.locals.sanitizedDeleteTaskDataParams = { ...sanitizedDeleteDataParams };
+      res.locals.sanitizedDeletePhaseDataParams = {
+        ...sanitizedDeleteDataParams,
+      };
 
       return next();
     } catch (error: any) {
@@ -114,8 +115,8 @@ const deleteTaskDataSanitizer = asyncHandler(
 ) as RequestHandler;
 
 export {
-  createTaskDataSanitizer,
-  readTaskDataSanitizer,
-  updateTaskDataSanitizer,
-  deleteTaskDataSanitizer,
+  createPhaseDataSanitizer,
+  readPhaseDataSanitizer,
+  updatePhaseDataSanitizer,
+  deletePhaseDataSanitizer,
 };

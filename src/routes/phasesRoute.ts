@@ -1,95 +1,71 @@
-import express from "express";
-import { TaskModel } from "../model/dbModel";
+import { Router } from "express";
 
-const router = express.Router();
+const router = Router();
 
-import PhaseModel from "../model/dbModel/phaseModel";
+import {
+  createPhaseDataSanitizer,
+  readPhaseDataSanitizer,
+  updatePhaseDataSanitizer,
+  deletePhaseDataSanitizer,
+} from "../middleware/sanitization/phaseSanitizer";
+
+import {
+  createPhaseDataValidator,
+  updatePhaseDataValidator,
+  readPhaseDataValidator,
+  deletePhaseDataValidator,
+} from "../middleware/validation/phaseValidation";
+
+import { userCredentialsVerifier } from "../middleware/verification/userCredentialsVerifier";
+
+import {
+  createNewPhaseDataController,
+  readPhaseDataController,
+  updatePhaseDataController,
+  deletePhaseDataController,
+} from "../controllers/phaseControllers";
+
+// Add a rate limiter middleware here
+
+// router.use([
+//   refreshCookieAuthentication,
+//   accessCookieAuthentication
+// ]);
 
 router
-  .route("/")
-  .get(async (req, res, next) => {
-    const phases = await PhaseModel.find({});
-    res.json(phases);
-  })
-  .post(async (req, res, next) => {
-    const phase = req.body;
-
-    const newPhase = await new PhaseModel(phase);
-
-    newPhase.save();
-
-    console.log("this route is working");
-
-    res.json(newPhase);
-  });
-
-router.route("/byproject/:user").get(async (req, res, next) => {
-  const { user } = req.params;
-  // console.log(user);
-  const modelMatch = {
-    user,
-  };
-
-  const allPhases = await PhaseModel.aggregate([
-    {
-      $match: modelMatch,
-    },
-    {
-      $project: {
-        user: "$user",
-        phaseId: "$phaseId",
-        projectReferenceId: "$projectReferenceId",
-        phaseName: "$phaseName",
-        phaseOrder: "$phaseOrder",
-      },
-    },
-    {
-      $group: { _id: "$projectReferenceId", phaseList: { $push: "$$CURRENT" } },
-    },
-    // { $unwind: "$phaseList" },
-    // { $sort: { "phaseList.phaseOrder": 1 } },
-    // {
-    //   $group: { _id: "$projectReferenceId", phaseList: { $push: "$phaseList" } },
-    // },
-    { $sort: { _id: 1 } },
+  .route("/create")
+  .post([
+    createPhaseDataSanitizer,
+    createPhaseDataValidator,
+    userCredentialsVerifier,
+    createNewPhaseDataController,
   ]);
 
-  // console.log(allPhases);
+router
+  .route("/read?:phaseId")
+  .get([
+    readPhaseDataSanitizer,
+    readPhaseDataValidator,
+    userCredentialsVerifier,
+    readPhaseDataController,
+  ]);
 
-  res.json(allPhases);
-});
+router
+  .route("/update")
+  .patch([
+    updatePhaseDataSanitizer,
+    updatePhaseDataValidator,
+    userCredentialsVerifier,
+    updatePhaseDataController,
+  ]);
 
-router.route("/changeorder").patch(async (req, res, next) => {
-  req.body.map(async (phase: any) => {
-    await PhaseModel.findOneAndUpdate(
-      { phaseId: phase.phaseId },
-      {
-        phaseOrder: phase.phaseOrder,
-      }
-    );
-  });
-  res.send("hello");
-});
-
-router.route("/delete").post(async (req, res, next) => {
-  console.log(req.body);
-
-  await PhaseModel.findOneAndDelete({ phaseId: await req.body.id });
-  await TaskModel.deleteMany({ phaseReferenceId: await req.body.id });
-
-  res.send("hello");
-});
-
-router.route("/trial/delete").delete(async (req, res, next) => {
-  console.log(req.body);
-  res.json(req.body);
-});
-
-router.route("/:phaseId").get(async (req, res, next) => {
-  const { phaseId } = req.params;
-
-  const phase = await PhaseModel.findOne({ phaseId });
-  res.json(phase);
-});
+router
+  .route("/delete")
+  .delete([
+    deletePhaseDataSanitizer,
+    deletePhaseDataValidator,
+    userCredentialsVerifier,
+    deletePhaseDataController,
+  ]);
 
 export default router;

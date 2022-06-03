@@ -77,9 +77,9 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.use("/projects", projectsRoute);
-app.use("/phases", phaseRoute);
-app.use("/tasks", taskRoute);
+app.use("/project", projectsRoute);
+app.use("/phase", phaseRoute);
+app.use("/task", taskRoute);
 app.use("/aggregate", aggregationRoute);
 app.use("/auth", authenticationRoute);
 

@@ -1,24 +1,12 @@
 const Joi = require("joi").extend(require("@joi/date"));
 
-const uuidValidationSchema = Joi.string()
-  .guid({
-    version: ["uuidv4", "uuidv5"],
-  })
-  .required();
-
-const uuidValidationSchemaNotRequired = Joi.string().guid({
-  version: ["uuidv4", "uuidv5"],
-});
-
-const stringContentValidationSchema = Joi.string().max(128).required();
-
-const booleanValidationSchema = Joi.boolean()
-  .required()
-  //   .truthy("yes")
-  //   .falsy("no")
-  .sensitive();
-
-const dateValidationSchema = Joi.date().required();
+import {
+  uuidValidationSchema,
+  uuidValidationSchemaNotRequired,
+  stringContentValidationSchema,
+  booleanValidationSchema,
+  dateValidationSchema,
+} from "./commonValidationSchema";
 
 const tasketteKeys =
   "user,taskId,projectReferenceId,phaseReferenceId,taskContent,dateOfDeadline,isCompleted";
@@ -39,15 +27,15 @@ const readTaskValidationSchema = Joi.object({
   taskId: uuidValidationSchema,
 });
 
-const updateTaskParametersValidationSchema = Joi.object({
+const updateTaskDataParametersValidationSchema = Joi.object({
   user: uuidValidationSchema,
-  taskId: uuidValidationSchemaNotRequired,
-  projectReferenceId: uuidValidationSchemaNotRequired,
-  phaseReferenceId: uuidValidationSchemaNotRequired,
+  taskId: uuidValidationSchema,
+  projectReferenceId: uuidValidationSchema,
+  phaseReferenceId: uuidValidationSchema,
   isCompleted: Joi.boolean().sensitive(),
 });
 
-const updateTaskDataValidatorSchema = Joi.object({
+const updateTaskDataContentValidatorSchema = Joi.object({
   dateOfDeadline: Joi.date(),
   taskContent: Joi.string().max(128),
   isCompleted: Joi.boolean().sensitive(),
@@ -63,7 +51,7 @@ const deleteTaskParametersValidationSchema = Joi.object({
 export {
   createNewTaskDataValidatorSchema,
   readTaskValidationSchema,
-  updateTaskParametersValidationSchema,
-  updateTaskDataValidatorSchema,
+  updateTaskDataParametersValidationSchema,
+  updateTaskDataContentValidatorSchema,
   deleteTaskParametersValidationSchema,
 };
