@@ -14,7 +14,7 @@ import {
   updateTaskDataValidator,
   readTaskDataValidator,
   deleteTaskDataValidator,
-} from "../middleware/validation/taskValidation";
+} from "../middleware/validation/taskValidator";
 
 import { userCredentialsVerifier } from "../middleware/verification/userCredentialsVerifier";
 
@@ -23,7 +23,7 @@ import {
   readTaskDataController,
   updateTaskDataController,
   deleteTaskDataController,
-} from "../controllers/taskControllers";
+} from "../controllers/taskController";
 
 // Add a rate limiter middleware here
 

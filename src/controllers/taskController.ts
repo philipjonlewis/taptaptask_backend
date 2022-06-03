@@ -13,6 +13,8 @@ const createNewTaskDataController = asyncHandler(
 
       const addedTaskData = await TaskModel.insertMany(validatedNewTaskData);
 
+      delete res.locals.validatedNewTaskData;
+
       res.json(addedTaskData);
     } catch (error: any) {
       throw new ErrorHandler(500, error.message, error);
@@ -25,6 +27,9 @@ const readTaskDataController = asyncHandler(
     try {
       const { validatedReadTaskDataId } = res.locals;
       const taskData = await TaskModel.find({ ...validatedReadTaskDataId });
+
+      delete res.locals.validatedReadTaskDataId;
+
       res.json(taskData);
     } catch (error: any) {
       throw new ErrorHandler(500, error.message, error);
@@ -35,17 +40,17 @@ const readTaskDataController = asyncHandler(
 const updateTaskDataController = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const { updateParameters, updateData } =
+      const { updateTaskDataParameters, updateTaskDataContent } =
         res.locals.validatedUpdateTaskData;
 
-      const updatedTask = await TaskModel.updateMany(
-        { ...updateParameters },
-        { ...updateData }
+      const updatedTaskData = await TaskModel.updateMany(
+        { ...updateTaskDataParameters },
+        { ...updateTaskDataContent }
       );
 
       delete res.locals.validatedUpdateTaskData;
 
-      res.json(updatedTask);
+      res.json(updatedTaskData);
     } catch (error: any) {
       throw new ErrorHandler(500, error.message, error);
     }

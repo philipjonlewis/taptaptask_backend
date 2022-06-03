@@ -45,5 +45,5 @@ export {
   readPhaseValidationSchema,
   updatePhaseDataParametersValidationSchema,
   updatePhaseDataContentValidatorSchema,
-  deletePhaseDataParametersValidationSchema
+  deletePhaseDataParametersValidationSchema,
 };

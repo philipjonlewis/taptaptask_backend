@@ -41,8 +41,8 @@ const readTaskDataSanitizer = asyncHandler(
     try {
       let { taskId } = req.query;
 
-      if (!taskId) {
-        res.locals.taskId = false;
+      if (taskId == undefined) {
+        res.locals.isReadTaskDataId = false;
         return next();
       }
 
@@ -61,7 +61,7 @@ const updateTaskDataSanitizer = asyncHandler(
     try {
       let [updateTaskDataParameters, updateTaskDataContent] = req.body;
 
-      if (!updateTaskDataContent.taskContent) {
+      if (updateTaskDataContent.taskContent == undefined) {
         res.locals.sanitizedData = {
           updateTaskDataParameters,
           updateTaskDataContent,
@@ -104,7 +104,9 @@ const deleteTaskDataSanitizer = asyncHandler(
         phaseReferenceId: sanitizeHtml(phaseReferenceId, sanitizationOptions),
       };
 
-      res.locals.sanitizedDeleteTaskDataParams = { ...sanitizedDeleteDataParams };
+      res.locals.sanitizedDeleteTaskDataParams = {
+        ...sanitizedDeleteDataParams,
+      };
 
       return next();
     } catch (error: any) {

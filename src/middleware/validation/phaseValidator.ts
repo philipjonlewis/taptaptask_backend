@@ -12,7 +12,7 @@ import {
   updatePhaseDataParametersValidationSchema,
   updatePhaseDataContentValidatorSchema,
   deletePhaseDataParametersValidationSchema,
-} from "./phaseValidationSchema";
+} from "./phaseValidatorSchema";
 
 import asyncHandler from "../../handlers/asyncHandler";
 
@@ -65,20 +65,22 @@ const createPhaseDataValidator = asyncHandler(
 const readPhaseDataValidator = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { sanitizedReadPhaseDataId } = res.locals;
+      const { sanitizedReadPhaseDataId, isReadPhaseDataId } = res.locals;
 
-      if (!sanitizedReadPhaseDataId) {
-        delete res.locals.sanitizedReadPhaseDataId;
-        res.locals.validatedReadPhaseId = {};
+      if (isReadPhaseDataId == false) {
+  
+        res.locals.validatedReadPhaseDataId = {};
+        delete res.locals.isReadPhaseDataId;
         return next();
       }
 
       await readPhaseValidationSchema
         .validateAsync({ phaseId: sanitizedReadPhaseDataId }, validationOptions)
         .then(({ value, warning, debug }: any) => {
-          res.locals.validatedReadPhaseId = { ...value };
+          res.locals.validatedReadPhaseDataId = { ...value };
 
           delete res.locals.sanitizedReadPhaseDataId;
+          delete res.locals.isReadPhaseDataId;
           return next();
         })
         .catch((error: any) => {

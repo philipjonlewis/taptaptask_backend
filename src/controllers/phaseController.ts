@@ -25,10 +25,11 @@ const createNewPhaseDataController = asyncHandler(
 const readPhaseDataController = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const { validatedReadPhaseId } = res.locals;
-      const phaseData = await PhaseModel.find({ ...validatedReadPhaseId });
+      const { validatedReadPhaseDataId } = res.locals;
 
-      delete res.locals.validatedReadPhaseId;
+      const phaseData = await PhaseModel.find({ ...validatedReadPhaseDataId });
+
+      delete res.locals.validatedReadPhaseDataId;
 
       res.json(phaseData);
     } catch (error: any) {
@@ -43,14 +44,14 @@ const updatePhaseDataController = asyncHandler(
       const { updatePhaseDataParameters, updatePhaseDataContent } =
         res.locals.validatedUpdatePhaseData;
 
-      const updatedPhase = await PhaseModel.updateMany(
+      const updatedPhaseData = await PhaseModel.updateMany(
         { ...updatePhaseDataParameters },
         { ...updatePhaseDataContent }
       );
 
       delete res.locals.validatedUpdatePhaseData;
 
-      res.json(updatedPhase);
+      res.json(updatedPhaseData);
     } catch (error: any) {
       throw new ErrorHandler(500, error.message, error);
     }

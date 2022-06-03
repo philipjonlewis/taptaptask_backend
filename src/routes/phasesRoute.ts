@@ -14,7 +14,7 @@ import {
   updatePhaseDataValidator,
   readPhaseDataValidator,
   deletePhaseDataValidator,
-} from "../middleware/validation/phaseValidation";
+} from "../middleware/validation/phaseValidator";
 
 import { userCredentialsVerifier } from "../middleware/verification/userCredentialsVerifier";
 
@@ -23,7 +23,7 @@ import {
   readPhaseDataController,
   updatePhaseDataController,
   deletePhaseDataController,
-} from "../controllers/phaseControllers";
+} from "../controllers/phaseController";
 
 // Add a rate limiter middleware here
 

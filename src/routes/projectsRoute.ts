@@ -1,43 +1,71 @@
-import express from "express";
+import { Router } from "express";
 
-const router = express.Router();
+const router = Router();
 
-import { ProjectModel, PhaseModel } from "../model/dbModel";
-import { v4 as uuidV4 } from "uuid";
+import {
+  createProjectDataSanitizer,
+  readProjectDataSanitizer,
+  updateProjectDataSanitizer,
+  deleteProjectDataSanitizer,
+} from "../middleware/sanitization/projectSanitizer";
+
+import {
+  createProjectDataValidator,
+  updateProjectDataValidator,
+  readProjectDataValidator,
+  deleteProjectDataValidator,
+} from "../middleware/validation/projectValidator";
+
+import { userCredentialsVerifier } from "../middleware/verification/userCredentialsVerifier";
+
+import {
+  createNewProjectDataController,
+  readProjectDataController,
+  updateProjectDataController,
+  deleteProjectDataController,
+} from "../controllers/projectController";
+
+// Add a rate limiter middleware here
+
+// router.use([
+//   refreshCookieAuthentication,
+//   accessCookieAuthentication
+// ]);
+
 router
-  .route("/")
-  .get(async (req, res, next) => {
-    const projects = await ProjectModel.find({});
-    res.json(projects);
-  })
-  .post(async (req, res, next) => {
-    const project = req.body;
+  .route("/create")
+  .post([
+    createProjectDataSanitizer,
+    createProjectDataValidator,
+    userCredentialsVerifier,
+    createNewProjectDataController,
+  ]);
 
-    const newProject = await new ProjectModel(project);
+router
+  .route("/read?:projectId")
+  .get([
+    readProjectDataSanitizer,
+    readProjectDataValidator,
+    userCredentialsVerifier,
+    readProjectDataController,
+  ]);
 
-    newProject.save();
+router
+  .route("/update")
+  .patch([
+    updateProjectDataSanitizer,
+    updateProjectDataValidator,
+    userCredentialsVerifier,
+    updateProjectDataController,
+  ]);
 
-    const newPhase = await new PhaseModel({
-      user: project.user,
-      phaseId: uuidV4(),
-      projectReferenceId: newProject.projectId,
-      phaseName: "Default Phase",
-      phaseOrder: 1,
-    });
-
-    newPhase.save();
-
-    console.log("this route is working");
-
-    res.json({ newProject, newPhase });
-  });
-
-router.route("/:projectId").get(async (req, res, next) => {
-  const { projectId } = req.params;
-
-  console.log(req.params);
-  const project = await ProjectModel.findOne({ projectId });
-  res.json(project);
-});
+router
+  .route("/delete")
+  .delete([
+    deleteProjectDataSanitizer,
+    deleteProjectDataValidator,
+    userCredentialsVerifier,
+    deleteProjectDataController,
+  ]);
 
 export default router;

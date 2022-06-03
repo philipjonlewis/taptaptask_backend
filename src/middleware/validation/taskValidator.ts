@@ -12,7 +12,7 @@ import {
   updateTaskDataParametersValidationSchema,
   updateTaskDataContentValidatorSchema,
   deleteTaskParametersValidationSchema,
-} from "./taskValidationSchema";
+} from "./taskValidatorSchema";
 
 import asyncHandler from "../../handlers/asyncHandler";
 
@@ -65,10 +65,11 @@ const createTaskDataValidator = asyncHandler(
 const readTaskDataValidator = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { sanitizedReadTaskDataId } = res.locals;
+      const { sanitizedReadTaskDataId, isReadTaskDataId } = res.locals;
 
-      if (!sanitizedReadTaskDataId) {
-        res.locals.validatedTaskId = {};
+      if (isReadTaskDataId == false) {
+        res.locals.validatedReadTaskDataId = {};
+        delete res.locals.isReadTaskDataId == false;
         return next();
       }
 
@@ -76,6 +77,10 @@ const readTaskDataValidator = asyncHandler(
         .validateAsync(sanitizedReadTaskDataId, validationOptions)
         .then(({ value, warning, debug }: any) => {
           res.locals.validatedReadTaskDataId = { ...value };
+
+          delete res.locals.sanitizedReadTaskDataId;
+          delete res.locals.isReadTaskDataId == false;
+
           return next();
         })
         .catch((error: any) => {

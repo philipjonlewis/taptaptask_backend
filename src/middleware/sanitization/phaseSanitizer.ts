@@ -18,11 +18,11 @@ const createPhaseDataSanitizer = asyncHandler(
     try {
       let newPhaseData = req.body;
 
-      newPhaseData = newPhaseData.map((phaseName: any) => {
+      newPhaseData = newPhaseData.map((phaseData: any) => {
         return {
-          ...phaseName,
+          ...phaseData,
           phaseName: sanitizeHtml(
-            phaseName.phaseName.toString(),
+            phaseData.phaseName.toString(),
             sanitizationOptions
           ).trim(),
         };
@@ -40,8 +40,9 @@ const readPhaseDataSanitizer = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       let { phaseId } = req.query;
-      if (!phaseId) {
-        res.locals.sanitizedPhaseId = false;
+      // console.log(phaseId);
+      if (phaseId == undefined) {
+        res.locals.isReadPhaseDataId = false;
         return next();
       }
 
@@ -61,7 +62,7 @@ const updatePhaseDataSanitizer = asyncHandler(
     try {
       let [updatePhaseDataParameters, updatePhaseDataContent] = req.body;
 
-      if (!updatePhaseDataContent.phaseName) {
+      if (updatePhaseDataContent.phaseName == undefined) {
         res.locals.sanitizedUpdatePhaseData = {
           updatePhaseDataParameters,
           updatePhaseDataContent,
@@ -94,7 +95,7 @@ const deletePhaseDataSanitizer = asyncHandler(
     try {
       const { user, phaseId, projectReferenceId } = req.body;
 
-      const sanitizedDeleteDataParams = {
+      const sanitizedDeletePhaseDataParams = {
         user: sanitizeHtml(user, sanitizationOptions),
         phaseId: sanitizeHtml(phaseId, sanitizationOptions),
         projectReferenceId: sanitizeHtml(
@@ -104,7 +105,7 @@ const deletePhaseDataSanitizer = asyncHandler(
       };
 
       res.locals.sanitizedDeletePhaseDataParams = {
-        ...sanitizedDeleteDataParams,
+        ...sanitizedDeletePhaseDataParams,
       };
 
       return next();
