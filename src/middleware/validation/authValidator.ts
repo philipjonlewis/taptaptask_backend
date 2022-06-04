@@ -6,13 +6,7 @@ import express, {
   NextFunction,
 } from "express";
 
-import {
-  createNewTaskDataValidatorSchema,
-  readTaskValidationSchema,
-  updateTaskDataParametersValidationSchema,
-  updateTaskDataContentValidatorSchema,
-  deleteTaskParametersValidationSchema,
-} from "./taskValidatorSchema";
+import { signUpUserDataValidationSchema } from "./authValidationSchema";
 
 import asyncHandler from "../../handlers/asyncHandler";
 
@@ -30,7 +24,24 @@ const validationOptions = {
 const signUpUserDataValidator = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      return next();
+      const { sanitizedSignUpUserData } = res.locals;
+
+      await signUpUserDataValidationSchema
+        .validateAsync(sanitizedSignUpUserData, validationOptions)
+        .then(({ value, warning, debug }: any) => {
+          res.locals.validatedSignUpUserData = { ...value };
+          delete res.locals.sanitizedSignUpUserData;
+          return next();
+        })
+        .catch((error: any) => {
+          throw new ErrorHandler(
+            409,
+            "There seems to be something wrong with the following fields",
+            error.details.map((err: any) => {
+              return err;
+            })
+          );
+        });
     } catch (error: any) {
       throw new ErrorHandler(error?.status, error?.message, error?.payload);
     }

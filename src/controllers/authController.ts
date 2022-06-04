@@ -3,12 +3,23 @@ import asyncHandler from "../handlers/asyncHandler";
 
 import ErrorHandler from "../middleware/errorHandling/modifiedErrorHandler";
 
-import { TaskModel } from "../model/dbModel";
+import { AuthModel } from "../model/dbModel";
+
+import { userAgentCleaner } from "../utils/userAgentCleaner";
 
 const signUpUserDataController = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      return res.send("sign up auth");
+      const { validatedSignUpUserData, useragent } = res.locals;
+
+      const newUser = await AuthModel.create({
+        ...validatedSignUpUserData,
+        userAgent: { ...(await userAgentCleaner(useragent)) },
+      });
+
+      newUser.save();
+
+      return res.json(newUser);
     } catch (error: any) {
       throw new ErrorHandler(500, error.message, error);
     }
