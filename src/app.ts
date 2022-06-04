@@ -28,11 +28,12 @@ import { databaseConnection } from "./model/dbConnection";
 
 import customErrorMiddleware from "./middleware/errorHandling/customErrorMiddleware";
 
-import projectsRoute from "./routes/projectsRoute";
-import phaseRoute from "./routes/phasesRoute";
-import taskRoute from "./routes/tasksRoute";
+import authRoutes from "./routes/authRoutes";
+import projectRoutes from "./routes/projectRoutes";
+import phaseRoutes from "./routes/phaseRoutes";
+import taskRoutes from "./routes/taskRoutes";
+
 import aggregationRoute from "./routes/aggregationRoute";
-import authenticationRoute from "./routes/authenticationRoute";
 
 import { projectDbSeeder, phaseDbSeeder, taskDbSeeder } from "./model/dbSeeder";
 
@@ -77,11 +78,11 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.use("/project", projectsRoute);
-app.use("/phase", phaseRoute);
-app.use("/task", taskRoute);
+app.use("/auth", authRoutes);
+app.use("/project", projectRoutes);
+app.use("/phase", phaseRoutes);
+app.use("/task", taskRoutes);
 app.use("/aggregate", aggregationRoute);
-app.use("/auth", authenticationRoute);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Home");

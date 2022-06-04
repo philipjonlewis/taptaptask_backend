@@ -22,13 +22,17 @@ const createProjectDataSanitizer = asyncHandler(
         return {
           ...projectData,
           projectName: sanitizeHtml(
-            projectData.projectName.toString(),
+            projectData.projectName.toString().trim(),
             sanitizationOptions
-          ).trim(),
+          ),
           projectDescription: sanitizeHtml(
-            projectData.projectDescription.toString(),
+            projectData.projectDescription.toString().trim(),
             sanitizationOptions
-          ).trim(),
+          ),
+          dateOfDeadline: sanitizeHtml(
+            projectData.dateOfDeadline.toString().trim(),
+            sanitizationOptions
+          ),
         };
       });
 
@@ -88,6 +92,10 @@ const updateProjectDataSanitizer = asyncHandler(
         ),
         projectDescription: sanitizeHtml(
           updateProjectDataContent.projectDescription.toString().trim(),
+          sanitizationOptions
+        ),
+        dateOfDeadline: sanitizeHtml(
+          updateProjectDataContent.dateOfDeadline.toString().trim(),
           sanitizationOptions
         ),
       };

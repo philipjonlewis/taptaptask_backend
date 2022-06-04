@@ -21,9 +21,17 @@ const createTaskDataSanitizer = asyncHandler(
         return {
           ...taskData,
           taskContent: sanitizeHtml(
-            taskData.taskContent.toString(),
+            taskData.taskContent.toString().trim(),
             sanitizationOptions
-          ).trim(),
+          ),
+          dateOfDeadline: sanitizeHtml(
+            taskData.dateOfDeadline.toString().trim(),
+            sanitizationOptions
+          ),
+          isCompleted: sanitizeHtml(
+            taskData.isCompleted.toString().trim(),
+            sanitizationOptions
+          ),
         };
       });
 
@@ -73,6 +81,14 @@ const updateTaskDataSanitizer = asyncHandler(
         ...updateTaskDataContent,
         taskContent: sanitizeHtml(
           updateTaskDataContent.taskContent.toString().trim(),
+          sanitizationOptions
+        ),
+        dateOfDeadline: sanitizeHtml(
+          updateTaskDataContent.dateOfDeadline.toString().trim(),
+          sanitizationOptions
+        ),
+        isCompleted: sanitizeHtml(
+          updateTaskDataContent.isCompleted.toString().trim(),
           sanitizationOptions
         ),
       };

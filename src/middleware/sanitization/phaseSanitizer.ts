@@ -25,6 +25,10 @@ const createPhaseDataSanitizer = asyncHandler(
             phaseData.phaseName.toString(),
             sanitizationOptions
           ).trim(),
+          phaseOrder: sanitizeHtml(
+            phaseData.phaseOrder.toString(),
+            sanitizationOptions
+          ).trim(),
         };
       });
 
@@ -74,6 +78,10 @@ const updatePhaseDataSanitizer = asyncHandler(
         ...updatePhaseDataContent,
         phaseName: sanitizeHtml(
           updatePhaseDataContent.phaseName.toString().trim(),
+          sanitizationOptions
+        ),
+        phaseOrder: sanitizeHtml(
+          updatePhaseDataContent.phaseOrder.toString().trim(),
           sanitizationOptions
         ),
       };
