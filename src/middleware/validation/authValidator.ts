@@ -6,7 +6,12 @@ import express, {
   NextFunction,
 } from "express";
 
-import { signUpUserDataValidationSchema } from "./authValidationSchema";
+import {
+  signUpUserDataValidationSchema,
+  LogInUserDataValidationSchema,
+  EditUserDataValidationSchema,
+  DeleteUserDataValidationSchema,
+} from "./authValidationSchema";
 
 import asyncHandler from "../../handlers/asyncHandler";
 
@@ -51,7 +56,26 @@ const signUpUserDataValidator = asyncHandler(
 const logInUserDataSValidator = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      return next();
+      const { sanitizedLogInUserData } = res.locals;
+
+      await LogInUserDataValidationSchema.validateAsync(
+        sanitizedLogInUserData,
+        validationOptions
+      )
+        .then(({ value, warning, debug }: any) => {
+          res.locals.validatedLogInUserData = { ...value };
+          delete res.locals.sanitizedLogInUserData;
+          return next();
+        })
+        .catch((error: any) => {
+          throw new ErrorHandler(
+            409,
+            "There seems to be something wrong with the following fields",
+            error.details.map((err: any) => {
+              return err;
+            })
+          );
+        });
     } catch (error: any) {
       throw new ErrorHandler(error?.status, error?.message, error?.payload);
     }
@@ -61,7 +85,26 @@ const logInUserDataSValidator = asyncHandler(
 const updateUserDataValidator = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      return next();
+      const { sanitizedEditUserData } = res.locals;
+
+      await EditUserDataValidationSchema.validateAsync(
+        sanitizedEditUserData,
+        validationOptions
+      )
+        .then(({ value, warning, debug }: any) => {
+          res.locals.validatedEditUserData = { ...value };
+          delete res.locals.sanitizedEditUserData;
+          return next();
+        })
+        .catch((error: any) => {
+          throw new ErrorHandler(
+            409,
+            "There seems to be something wrong with the following fields",
+            error.details.map((err: any) => {
+              return err;
+            })
+          );
+        });
     } catch (error: any) {
       throw new ErrorHandler(error?.status, error?.message, error?.payload);
     }
@@ -71,7 +114,26 @@ const updateUserDataValidator = asyncHandler(
 const deleteUserDataValidator = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      return next();
+      const { sanitizedDeleteUserData } = res.locals;
+
+      await DeleteUserDataValidationSchema.validateAsync(
+        sanitizedDeleteUserData,
+        validationOptions
+      )
+        .then(({ value, warning, debug }: any) => {
+          res.locals.validatedDeleteUserData = { ...value };
+          delete res.locals.sanitizedDeleteUserData;
+          return next();
+        })
+        .catch((error: any) => {
+          throw new ErrorHandler(
+            409,
+            "There seems to be something wrong with the following fields",
+            error.details.map((err: any) => {
+              return err;
+            })
+          );
+        });
     } catch (error: any) {
       throw new ErrorHandler(error?.status, error?.message, error?.payload);
     }

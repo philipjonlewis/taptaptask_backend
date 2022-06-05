@@ -12,12 +12,15 @@ const signUpUserDataController = asyncHandler(
     try {
       const { validatedSignUpUserData, useragent } = res.locals;
 
-      const newUser = await AuthModel.create({
+      const newUser = await new AuthModel({
         ...validatedSignUpUserData,
         userAgent: { ...(await userAgentCleaner(useragent)) },
       });
 
       newUser.save();
+
+      delete res.locals.validatedSignUpUserData;
+      delete res.locals.useragent;
 
       return res.json(newUser);
     } catch (error: any) {
@@ -29,7 +32,15 @@ const signUpUserDataController = asyncHandler(
 const logInUserkDataController = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      return res.send("log in auth");
+      const { validatedLogInUserData } = res.locals;
+
+      const existingUser = await AuthModel.find({
+        ...validatedLogInUserData,
+      }).select("+email +username -user -_id -__v -createdAt -updatedAt");
+
+      delete res.locals.validatedLogInUserData;
+
+      return res.json(existingUser);
     } catch (error: any) {
       throw new ErrorHandler(500, error.message, error);
     }
@@ -39,7 +50,25 @@ const logInUserkDataController = asyncHandler(
 const updateUserDataController = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      return res.send("edit auth");
+      const { validatedEditUserData } = res.locals;
+      // Must use userId for params and have a setting for existing password to new password
+      const { username, email, newPassword, password } = validatedEditUserData;
+
+      const editedUser = await AuthModel.findOneAndUpdate(
+        {
+          user: "1850ea5e-580e-4c35-82e2-7e21fb0ff9b4",
+          password: password,
+        },
+        {
+          ...(username && { username }),
+          ...(email && { email }),
+          ...(newPassword && { password: newPassword }),
+        }
+      ).select("+email +username -user -_id -__v -createdAt -updatedAt");
+
+      delete res.locals.validatedEditUserData;
+
+      return res.json(editedUser);
     } catch (error: any) {
       throw new ErrorHandler(500, error.message, error);
     }
@@ -49,7 +78,15 @@ const updateUserDataController = asyncHandler(
 const deleteUserDataController = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      return res.send("delete auth");
+      const { validatedDeleteUserData } = res.locals;
+      // Must use userId for params and have a setting for existing password to new password
+      const deletedUser = await AuthModel.findOneAndDelete({
+        ...validatedDeleteUserData,
+      });
+
+      delete res.locals.validatedEditUserData;
+
+      return res.json(deletedUser);
     } catch (error: any) {
       throw new ErrorHandler(500, error.message, error);
     }

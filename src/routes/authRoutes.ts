@@ -8,7 +8,11 @@ import {
 
 import { userCredentialsVerifier } from "../middleware/verification/userCredentialsVerifier";
 
+import userAgent from "express-useragent";
+
 const router = Router();
+
+router.use(userAgent.express());
 
 import {
   signUpUserDataSanitizer,
@@ -30,7 +34,6 @@ import {
   updateUserDataController,
   deleteUserDataController,
 } from "../controllers/authController";
-
 
 router
   .route("/signup")

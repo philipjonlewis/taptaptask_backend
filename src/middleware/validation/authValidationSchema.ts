@@ -41,4 +41,37 @@ const signUpUserDataValidationSchema = Joi.object({
   passwordConfirmation: passwordValidSchemaConfirmation,
 });
 
-export { signUpUserDataValidationSchema };
+const LogInUserDataValidationSchema = Joi.object({
+  email: emailValidSchema,
+  password: passwordValidSchema,
+});
+
+const EditUserDataValidationSchema = Joi.object({
+  email: Joi.string()
+    .lowercase()
+    .trim()
+    .min(3)
+    .max(256)
+    .email({ minDomainSegments: 2, tlds: { allow: false } }),
+  username: Joi.string().alphanum().lowercase().trim().min(6).max(32),
+  newPassword: Joi.string()
+    .trim()
+    .min(6)
+    .max(32)
+    .pattern(
+      new RegExp("(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,32}$")
+    ),
+  password: passwordValidSchema,
+});
+
+const DeleteUserDataValidationSchema = Joi.object({
+  email: emailValidSchema,
+  password: passwordValidSchema,
+});
+
+export {
+  signUpUserDataValidationSchema,
+  LogInUserDataValidationSchema,
+  EditUserDataValidationSchema,
+  DeleteUserDataValidationSchema,
+};

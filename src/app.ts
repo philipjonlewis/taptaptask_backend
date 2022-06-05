@@ -41,8 +41,6 @@ app.disable("x-powered-by");
 
 app.set("trust proxy", true);
 
-app.use(userAgent.express());
-
 // url encoded is needed with form data
 app.use(express.urlencoded({ extended: true }));
 // express.json is needed when parsing json data i.e. rest

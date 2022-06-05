@@ -72,7 +72,7 @@ const authSchema = new Schema(
     },
     userAgent: {
       type: [],
-      select: true,
+      select: false,
     },
   },
   { timestamps: true }
