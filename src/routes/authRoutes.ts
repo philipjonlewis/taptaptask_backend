@@ -6,7 +6,7 @@ import {
   Router,
 } from "express";
 
-import { refreshCookieAuthentication } from "../infosec/cookies/authentication/refreshCookieAuthentication";
+import { refreshCookieAuthentication } from "../infosec/cookies/authentication/cookieAuthentication";
 
 import { userCredentialsVerifier } from "../middleware/verification/userCredentialsVerifier";
 

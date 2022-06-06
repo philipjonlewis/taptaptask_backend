@@ -27,10 +27,11 @@ const createNewProjectDataController = asyncHandler(
 const readProjectDataController = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const { validatedReadProjectDataId, authenticatedUserId } = res.locals;
+      const { validatedReadProjectDataId, refreshTokenAuthenticatedUserId } =
+        res.locals;
 
       const projectData = await ProjectModel.find({
-        user: authenticatedUserId,
+        user: refreshTokenAuthenticatedUserId,
         ...validatedReadProjectDataId,
       });
 
@@ -46,12 +47,15 @@ const readProjectDataController = asyncHandler(
 const updateProjectDataController = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const { authenticatedUserId } = res.locals;
+      const { refreshTokenAuthenticatedUserId } = res.locals;
       const { updateProjectDataParameters, updateProjectDataContent } =
         res.locals.validatedUpdateProjectData;
 
       const updatedProjectData = await ProjectModel.updateMany(
-        { user: authenticatedUserId, ...updateProjectDataParameters },
+        {
+          user: refreshTokenAuthenticatedUserId,
+          ...updateProjectDataParameters,
+        },
         { ...updateProjectDataContent }
       );
 
@@ -67,11 +71,13 @@ const updateProjectDataController = asyncHandler(
 const deleteProjectDataController = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const { validatedDeleteProjectDataParams, authenticatedUserId } =
-        res.locals;
+      const {
+        validatedDeleteProjectDataParams,
+        refreshTokenAuthenticatedUserId,
+      } = res.locals;
 
       const deletedProjectData = await ProjectModel.findOneAndDelete({
-        user: authenticatedUserId,
+        user: refreshTokenAuthenticatedUserId,
         ...validatedDeleteProjectDataParams,
       });
 

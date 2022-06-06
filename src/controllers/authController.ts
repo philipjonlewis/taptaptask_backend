@@ -1,7 +1,6 @@
 import { Request, Response, RequestHandler, NextFunction } from "express";
 import asyncHandler from "../handlers/asyncHandler";
-import fs from "fs";
-import path from "path";
+
 import ErrorHandler from "../middleware/errorHandling/modifiedErrorHandler";
 
 import { AuthModel } from "../model/dbModel";
@@ -9,24 +8,6 @@ import { AuthModel } from "../model/dbModel";
 import { userAgentCleaner } from "../utils/userAgentCleaner";
 
 import bcrypt from "bcryptjs";
-
-// const publicKey = fs.readFileSync(
-//   path.resolve(
-//     __dirname,
-//     "../infosec/keys/refreshTokenKeys/refreshTokenPublic.key"
-//   ),
-//   "utf8"
-// );
-
-import {
-  refreshTokenHandler,
-  accessTokenHandler,
-} from "../infosec/cookies/handlers/tokenCookieHandlers";
-
-import {
-  refreshCookieOptions,
-  accessCookieOptions,
-} from "../infosec/cookies/misc/cookieOptions";
 
 const signUpUserDataController = asyncHandler(
   async (req: Request, res: Response) => {
@@ -66,10 +47,8 @@ const logInUserDataController = asyncHandler(
       const existingUser = await AuthModel.find({
         email: validatedLogInUserData.email,
       }).select(
-        "+email +username -user -_id -__v -createdAt -updatedAt +password +refreshTokens"
+        "+email +username -user -_id -__v -createdAt -updatedAt +password +refreshTokens +accessTokens"
       );
-
-      delete res.locals.validatedLogInUserData;
 
       bcrypt.compare(
         validatedLogInUserData.password,
@@ -84,18 +63,34 @@ const logInUserDataController = asyncHandler(
                 {
                   signed: true,
                   // expires in 28 days
-                  expires: new Date(Date.now() + 6048000 * 4),
+                  // expires: new Date(Date.now() + 6048000 * 4),
+                  maxAge: 241920000,
                   // make secure true upon deployment
                   secure: false,
                   httpOnly: false,
-                  sameSite: true,
+                  sameSite: false,
+                }
+              )
+              .cookie(
+                "authentication-access",
+                existingUser[0].accessTokens[0],
+                {
+                  signed: true,
+                  // expires in 28 days
+                  maxAge: 86400000,
+                  // make secure true upon deployment
+                  secure: false,
+                  httpOnly: false,
+                  sameSite: false,
                 }
               )
               .json({
                 code: 200,
                 status: true,
                 message: "Successfully logged in",
+                payload: { _id: validatedLogInUserData },
               });
+            delete res.locals.validatedLogInUserData;
           } else {
             return res.send("No");
           }
@@ -110,14 +105,15 @@ const logInUserDataController = asyncHandler(
 const updateUserDataController = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const { validatedEditUserData, authenticatedUserId } = await res.locals;
+      const { validatedEditUserData, refreshTokenAuthenticatedUserId } =
+        await res.locals;
 
       // Must use userId for params and have a setting for existing password to new password
       const { username, email, newPassword, password } = validatedEditUserData;
 
       const isUserExisting = await AuthModel.find({
         //replace email with user id from cookie
-        _id: authenticatedUserId,
+        _id: refreshTokenAuthenticatedUserId,
       }).select("+password");
 
       if (!isUserExisting) {
@@ -148,7 +144,7 @@ const updateUserDataController = asyncHandler(
       if (isRightPassword) {
         const editedUser = await AuthModel.findOneAndUpdate(
           {
-            _id: authenticatedUserId,
+            _id: refreshTokenAuthenticatedUserId,
           },
           {
             ...(username && { username }),
@@ -173,10 +169,11 @@ const updateUserDataController = asyncHandler(
 const deleteUserDataController = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const { validatedDeleteUserData, authenticatedUserId } = res.locals;
+      const { validatedDeleteUserData, refreshTokenAuthenticatedUserId } =
+        res.locals;
       // Must use userId for params and have a setting for existing password to new password
       const deletedUser = await AuthModel.findOneAndDelete({
-        authenticatedUserId,
+        refreshTokenAuthenticatedUserId,
         ...validatedDeleteUserData,
       });
 

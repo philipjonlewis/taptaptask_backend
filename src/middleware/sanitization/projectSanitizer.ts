@@ -17,7 +17,7 @@ const createProjectDataSanitizer = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       let newProjectData = req.body;
-      const { authenticatedUserId } = res.locals;
+      const { refreshTokenAuthenticatedUserId } = res.locals;
 
       newProjectData = newProjectData.map((projectData: any) => {
         return {
@@ -34,7 +34,7 @@ const createProjectDataSanitizer = asyncHandler(
             projectData.dateOfDeadline.toString().trim(),
             sanitizationOptions
           ),
-          user: authenticatedUserId,
+          user: refreshTokenAuthenticatedUserId,
         };
       });
 

@@ -56,9 +56,11 @@ app.use(nocache());
 
 app.set("etag", false);
 
+app.set("trust proxy", 1);
+
 app.use(
   cors({
-    origin: "*",
+    origin: "http://192.168.0.25:3000",
     methods: ["GET", "POST", "PATCH", "DELETE"],
     credentials: true,
   })
@@ -72,7 +74,13 @@ databaseConnection();
 // app.use(csrfProtection);
 
 app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Content-Type", "application/json;charset=UTF-8");
+  res.header("Access-Control-Allow-Credentials", "http://192.168.0.25:3000");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
   next();
 });
 

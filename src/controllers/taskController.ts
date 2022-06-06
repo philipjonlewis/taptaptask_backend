@@ -25,13 +25,14 @@ const createNewTaskDataController = asyncHandler(
 const readTaskDataController = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const { validatedReadTaskDataId, authenticatedUserId } = res.locals;
-
+      const { validatedReadTaskDataId, refreshTokenAuthenticatedUserId } =
+        res.locals;
+      console.log(refreshTokenAuthenticatedUserId);
       const taskData = await TaskModel.find({
-        user: authenticatedUserId,
+        user: refreshTokenAuthenticatedUserId,
         ...validatedReadTaskDataId,
       });
-
+      // 629db2e331f8a5f114d8af88
       delete res.locals.validatedReadTaskDataId;
 
       res.json(taskData);
@@ -44,13 +45,13 @@ const readTaskDataController = asyncHandler(
 const updateTaskDataController = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const { authenticatedUserId } = res.locals;
+      const { refreshTokenAuthenticatedUserId } = res.locals;
 
       const { updateTaskDataParameters, updateTaskDataContent } =
         res.locals.validatedUpdateTaskData;
 
       const updatedTaskData = await TaskModel.updateMany(
-        { user: authenticatedUserId, ...updateTaskDataParameters },
+        { user: refreshTokenAuthenticatedUserId, ...updateTaskDataParameters },
         { ...updateTaskDataContent }
       );
 
@@ -66,10 +67,12 @@ const updateTaskDataController = asyncHandler(
 const deleteTaskDataController = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const { validatedDeleteTaskDataParams, authenticatedUserId } = res.locals;
+      const { validatedDeleteTaskDataParams, refreshTokenAuthenticatedUserId } =
+        res.locals;
 
       const deletedTaskData = await TaskModel.findOneAndDelete({
-        user: authenticatedUserId,...validatedDeleteTaskDataParams,
+        user: refreshTokenAuthenticatedUserId,
+        ...validatedDeleteTaskDataParams,
       });
 
       delete res.locals.validatedDeleteTaskDataParams;

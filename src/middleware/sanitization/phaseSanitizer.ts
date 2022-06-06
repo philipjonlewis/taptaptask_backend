@@ -17,7 +17,7 @@ const createPhaseDataSanitizer = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       let newPhaseData = req.body;
-      const { authenticatedUserId } = res.locals;
+      const { refreshTokenAuthenticatedUserId } = res.locals;
 
       newPhaseData = newPhaseData.map((phaseData: any) => {
         return {
@@ -30,7 +30,7 @@ const createPhaseDataSanitizer = asyncHandler(
             phaseData.phaseOrder.toString(),
             sanitizationOptions
           ).trim(),
-          user: authenticatedUserId,
+          user: refreshTokenAuthenticatedUserId,
         };
       });
 

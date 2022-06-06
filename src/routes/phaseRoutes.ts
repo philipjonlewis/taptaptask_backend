@@ -2,7 +2,10 @@ import { Router } from "express";
 
 const router = Router();
 
-import { refreshCookieAuthentication } from "../infosec/cookies/authentication/refreshCookieAuthentication";
+import {
+  refreshCookieAuthentication,
+  accessCookieAuthentication,
+} from "../infosec/cookies/authentication/cookieAuthentication";
 
 import {
   createPhaseDataSanitizer,
@@ -29,10 +32,7 @@ import {
 
 // Add a rate limiter middleware here
 
-router.use([
-  refreshCookieAuthentication,
-  // accessCookieAuthentication
-]);
+router.use([refreshCookieAuthentication, accessCookieAuthentication]);
 
 router
   .route("/create")

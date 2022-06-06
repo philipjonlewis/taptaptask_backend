@@ -74,6 +74,14 @@ const authSchema = new Schema(
       ],
       select: false,
     },
+    accessTokens: {
+      type: [
+        {
+          type: String,
+        },
+      ],
+      select: false,
+    },
     resetPins: {
       type: [
         {
@@ -92,16 +100,25 @@ const authSchema = new Schema(
 
 authSchema.pre("save", async function (next) {
   try {
-    //expires in 15 days
-    const signUpRefreshToken = jwt.sign({ token: await this._id }, privateKey, {
+    //expires in 28 days
+    const refreshToken = jwt.sign({ token: await this._id }, privateKey, {
       issuer: await this._id.toString(),
       subject: await this.email,
-      audience: "https://www.datetask.com",
-      expiresIn: "360h",
+      audience: "/",
+      expiresIn: "672h",
+      algorithm: "RS256",
+    });
+    //expires in 1 day
+    const accessToken = jwt.sign({ token: await this._id }, privateKey, {
+      issuer: await this._id.toString(),
+      subject: await this.email,
+      audience: "/",
+      expiresIn: "24h",
       algorithm: "RS256",
     });
 
-    await this.refreshTokens.push(signUpRefreshToken);
+    await this.refreshTokens.push(refreshToken);
+    await this.accessTokens.push(accessToken);
 
     if (!this.isModified("password")) {
       return next();
