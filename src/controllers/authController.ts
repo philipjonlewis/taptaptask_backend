@@ -1,11 +1,22 @@
 import { Request, Response, RequestHandler, NextFunction } from "express";
 import asyncHandler from "../handlers/asyncHandler";
-
+import fs from "fs";
+import path from "path";
 import ErrorHandler from "../middleware/errorHandling/modifiedErrorHandler";
 
 import { AuthModel } from "../model/dbModel";
 
 import { userAgentCleaner } from "../utils/userAgentCleaner";
+
+import bcrypt from "bcryptjs";
+
+const publicKey = fs.readFileSync(
+  path.resolve(
+    __dirname,
+    "../infosec/keys/refreshTokenKeys/refreshTokenPublic.key"
+  ),
+  "utf8"
+);
 
 const signUpUserDataController = asyncHandler(
   async (req: Request, res: Response) => {
@@ -17,30 +28,52 @@ const signUpUserDataController = asyncHandler(
         userAgent: { ...(await userAgentCleaner(useragent)) },
       });
 
-      newUser.save();
+      await newUser.save();
 
       delete res.locals.validatedSignUpUserData;
       delete res.locals.useragent;
 
-      return res.json(newUser);
+      return res.json(await newUser);
     } catch (error: any) {
       throw new ErrorHandler(500, error.message, error);
     }
   }
 ) as RequestHandler;
 
-const logInUserkDataController = asyncHandler(
+const logInUserDataController = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const { validatedLogInUserData } = res.locals;
+      const { validatedLogInUserData }: any = res.locals;
+
+      const isUserExisting = await AuthModel.exists({
+        email: validatedLogInUserData.email,
+      }).select("+password");
+
+      console.log(isUserExisting);
+
+      if (!isUserExisting) {
+        throw new ErrorHandler(500, "No user like that", {});
+      }
 
       const existingUser = await AuthModel.find({
-        ...validatedLogInUserData,
-      }).select("+email +username -user -_id -__v -createdAt -updatedAt");
+        email: validatedLogInUserData.email,
+      }).select(
+        "+email +username -user -_id -__v -createdAt -updatedAt +password"
+      );
 
       delete res.locals.validatedLogInUserData;
 
-      return res.json(existingUser);
+      bcrypt.compare(
+        validatedLogInUserData.password,
+        existingUser[0].password,
+        function (err, result) {
+          if (result) {
+            return res.json(existingUser);
+          } else {
+            return res.send("No");
+          }
+        }
+      );
     } catch (error: any) {
       throw new ErrorHandler(500, error.message, error);
     }
@@ -54,21 +87,41 @@ const updateUserDataController = asyncHandler(
       // Must use userId for params and have a setting for existing password to new password
       const { username, email, newPassword, password } = validatedEditUserData;
 
-      const editedUser = await AuthModel.findOneAndUpdate(
-        {
-          user: "1850ea5e-580e-4c35-82e2-7e21fb0ff9b4",
-          password: password,
-        },
-        {
-          ...(username && { username }),
-          ...(email && { email }),
-          ...(newPassword && { password: newPassword }),
+      const isUserExisting = (await AuthModel.exists({
+        //replace email with user id from cookie 
+        email,
+      }).select("+password")) as { password: string };
+
+      if (!isUserExisting) {
+        throw new ErrorHandler(500, "No user like that", {});
+      }
+
+      bcrypt.compare(
+        password,
+        isUserExisting.password,
+        async function (err, result) {
+          if (result) {
+            const editedUser = await AuthModel.findOneAndUpdate(
+              {
+                // Get this user from the decoded cookie
+                user: "1850ea5e-580e-4c35-82e2-7e21fb0ff9b4",
+                password: password,
+              },
+              {
+                ...(username && { username }),
+                ...(email && { email }),
+                ...(newPassword && { password: newPassword }),
+              }
+            ).select("+email +username -user -_id -__v -createdAt -updatedAt");
+
+            delete res.locals.validatedEditUserData;
+
+            return res.json(editedUser);
+          } else {
+            return res.send("No");
+          }
         }
-      ).select("+email +username -user -_id -__v -createdAt -updatedAt");
-
-      delete res.locals.validatedEditUserData;
-
-      return res.json(editedUser);
+      );
     } catch (error: any) {
       throw new ErrorHandler(500, error.message, error);
     }
@@ -95,7 +148,7 @@ const deleteUserDataController = asyncHandler(
 
 export {
   signUpUserDataController,
-  logInUserkDataController,
+  logInUserDataController,
   updateUserDataController,
   deleteUserDataController,
 };

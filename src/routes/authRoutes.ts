@@ -30,7 +30,7 @@ import {
 
 import {
   signUpUserDataController,
-  logInUserkDataController,
+  logInUserDataController,
   updateUserDataController,
   deleteUserDataController,
 } from "../controllers/authController";
@@ -50,7 +50,7 @@ router
     logInUserDataSanitizer,
     logInUserDataSValidator,
     userCredentialsVerifier,
-    logInUserkDataController,
+    logInUserDataController,
   ]);
 
 router

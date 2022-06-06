@@ -1,7 +1,19 @@
 import mongoose from "mongoose";
+import fs from "fs";
+import path from "path";
 import { emailRegex, passwordRegex } from "../../utils/regexValidators";
 const { Schema } = mongoose;
 import { v4 as uuidV4 } from "uuid";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+
+const privateKey = fs.readFileSync(
+  path.resolve(
+    __dirname,
+    "../../infosec/keys/refreshTokenKeys/refreshTokenPrivate.key"
+  ),
+  "utf8"
+);
 
 const authSchema = new Schema(
   {
@@ -77,5 +89,26 @@ const authSchema = new Schema(
   },
   { timestamps: true }
 );
+
+authSchema.pre("save", async function (next) {
+  try {
+    //expires in 15 days
+    const signUpRefreshToken = jwt.sign({ token: await this._id }, privateKey, {
+      expiresIn: "360h",
+    });
+
+    await this.refreshTokens.push(signUpRefreshToken);
+
+    if (!this.isModified("password")) {
+      return next();
+    }
+
+    this.password = await bcrypt.hash(await this.password, 10);
+
+    return next();
+  } catch (error) {
+    console.log("error from auth user db");
+  }
+});
 
 export default authSchema;
