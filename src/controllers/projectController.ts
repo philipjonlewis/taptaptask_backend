@@ -27,9 +27,10 @@ const createNewProjectDataController = asyncHandler(
 const readProjectDataController = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const { validatedReadProjectDataId } = res.locals;
+      const { validatedReadProjectDataId, authenticatedUserId } = res.locals;
 
       const projectData = await ProjectModel.find({
+        user: authenticatedUserId,
         ...validatedReadProjectDataId,
       });
 
@@ -45,11 +46,12 @@ const readProjectDataController = asyncHandler(
 const updateProjectDataController = asyncHandler(
   async (req: Request, res: Response) => {
     try {
+      const { authenticatedUserId } = res.locals;
       const { updateProjectDataParameters, updateProjectDataContent } =
         res.locals.validatedUpdateProjectData;
 
       const updatedProjectData = await ProjectModel.updateMany(
-        { ...updateProjectDataParameters },
+        { user: authenticatedUserId, ...updateProjectDataParameters },
         { ...updateProjectDataContent }
       );
 
@@ -65,9 +67,11 @@ const updateProjectDataController = asyncHandler(
 const deleteProjectDataController = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const { validatedDeleteProjectDataParams } = res.locals;
+      const { validatedDeleteProjectDataParams, authenticatedUserId } =
+        res.locals;
 
       const deletedProjectData = await ProjectModel.findOneAndDelete({
+        user: authenticatedUserId,
         ...validatedDeleteProjectDataParams,
       });
 

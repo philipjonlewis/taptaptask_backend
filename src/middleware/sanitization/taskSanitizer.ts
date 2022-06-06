@@ -16,6 +16,7 @@ const createTaskDataSanitizer = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       let newTaskData = req.body;
+      const { authenticatedUserId } = res.locals;
 
       newTaskData = newTaskData.map((taskData: any) => {
         return {
@@ -32,6 +33,7 @@ const createTaskDataSanitizer = asyncHandler(
             taskData.isCompleted.toString().trim(),
             sanitizationOptions
           ),
+          user: authenticatedUserId,
         };
       });
 

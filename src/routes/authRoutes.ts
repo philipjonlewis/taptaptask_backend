@@ -6,6 +6,8 @@ import {
   Router,
 } from "express";
 
+import { refreshCookieAuthentication } from "../infosec/cookies/authentication/refreshCookieAuthentication";
+
 import { userCredentialsVerifier } from "../middleware/verification/userCredentialsVerifier";
 
 import userAgent from "express-useragent";
@@ -56,6 +58,7 @@ router
 router
   .route("/update")
   .patch([
+    refreshCookieAuthentication,
     updateUserDataSanitizer,
     updateUserDataValidator,
     userCredentialsVerifier,
@@ -65,6 +68,7 @@ router
 router
   .route("/delete")
   .delete([
+    refreshCookieAuthentication,
     deleteUserDataSanitizer,
     deleteUserDataValidator,
     userCredentialsVerifier,

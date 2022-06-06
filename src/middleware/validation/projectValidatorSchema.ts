@@ -11,7 +11,7 @@ import {
 
 const createNewProjectDataValidatorSchema = Joi.array().items(
   Joi.object({
-    user: uuidValidationSchema,
+    user: Joi.string(),
     projectId: uuidValidationSchema,
     projectName: stringContentValidationSchema,
     projectDescription: stringContentValidationSchema,

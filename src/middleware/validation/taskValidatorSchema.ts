@@ -13,7 +13,7 @@ const tasketteKeys =
 
 const createNewTaskDataValidatorSchema = Joi.array().items(
   Joi.object({
-    user: uuidValidationSchema,
+    user: Joi.string(),
     taskId: uuidValidationSchema,
     projectReferenceId: uuidValidationSchema,
     phaseReferenceId: uuidValidationSchema,

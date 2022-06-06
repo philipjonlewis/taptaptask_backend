@@ -22,13 +22,17 @@ const customErrorMiddleware = async (
   // payload should only be for logging errors in the database
   // Make a system to separate errors and log to error DB only the important ones
 
-  return res.status(status).json({
-    code: status,
-    status: false,
-    message: message,
-    //remove payload on deployment maybe
-    ...(error.payload ? { payload: error.payload } : { payload: null }),
-  });
+  return res
+    .status(status)
+    .clearCookie("authentication-refresh", { path: "/" })
+    .clearCookie("authentication-access", { path: "/" })
+    .json({
+      code: status,
+      status: false,
+      message: message,
+      //remove payload on deployment maybe
+      ...(error.payload ? { payload: error.payload } : { payload: null }),
+    });
 };
 
 export default customErrorMiddleware;

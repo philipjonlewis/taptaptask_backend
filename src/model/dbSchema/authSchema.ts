@@ -94,7 +94,11 @@ authSchema.pre("save", async function (next) {
   try {
     //expires in 15 days
     const signUpRefreshToken = jwt.sign({ token: await this._id }, privateKey, {
+      issuer: await this._id.toString(),
+      subject: await this.email,
+      audience: "https://www.datetask.com",
       expiresIn: "360h",
+      algorithm: "RS256",
     });
 
     await this.refreshTokens.push(signUpRefreshToken);
@@ -107,6 +111,7 @@ authSchema.pre("save", async function (next) {
 
     return next();
   } catch (error) {
+    console.log(error);
     console.log("error from auth user db");
   }
 });

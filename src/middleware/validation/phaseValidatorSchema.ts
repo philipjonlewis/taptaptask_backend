@@ -11,7 +11,7 @@ import {
 
 const createNewPhaseDataValidatorSchema = Joi.array().items(
   Joi.object({
-    user: uuidValidationSchema,
+    user: Joi.string(),
     phaseId: uuidValidationSchema,
     projectReferenceId: uuidValidationSchema,
     phaseName: stringContentValidationSchema,

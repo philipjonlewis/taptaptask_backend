@@ -2,6 +2,8 @@ import { Router } from "express";
 
 const router = Router();
 
+import { refreshCookieAuthentication } from "../infosec/cookies/authentication/refreshCookieAuthentication";
+
 import {
   createTaskDataSanitizer,
   readTaskDataSanitizer,
@@ -27,10 +29,10 @@ import {
 
 // Add a rate limiter middleware here
 
-// router.use([
-//   refreshCookieAuthentication,
-//   accessCookieAuthentication
-// ]);
+router.use([
+  refreshCookieAuthentication,
+  // accessCookieAuthentication
+]);
 
 router
   .route("/create")

@@ -25,9 +25,12 @@ const createNewPhaseDataController = asyncHandler(
 const readPhaseDataController = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const { validatedReadPhaseDataId } = res.locals;
+      const { validatedReadPhaseDataId, authenticatedUserId } = res.locals;
 
-      const phaseData = await PhaseModel.find({ ...validatedReadPhaseDataId });
+      const phaseData = await PhaseModel.find({
+        user: authenticatedUserId,
+        ...validatedReadPhaseDataId,
+      });
 
       delete res.locals.validatedReadPhaseDataId;
 
@@ -41,11 +44,12 @@ const readPhaseDataController = asyncHandler(
 const updatePhaseDataController = asyncHandler(
   async (req: Request, res: Response) => {
     try {
+      const { authenticatedUserId } = res.locals;
       const { updatePhaseDataParameters, updatePhaseDataContent } =
         res.locals.validatedUpdatePhaseData;
 
       const updatedPhaseData = await PhaseModel.updateMany(
-        { ...updatePhaseDataParameters },
+        { user: authenticatedUserId, ...updatePhaseDataParameters },
         { ...updatePhaseDataContent }
       );
 
@@ -61,9 +65,11 @@ const updatePhaseDataController = asyncHandler(
 const deletePhaseDataController = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const { validatedDeletePhaseDataParams } = res.locals;
+      const { validatedDeletePhaseDataParams, authenticatedUserId } =
+        res.locals;
 
       const deletedPhaseData = await PhaseModel.findOneAndDelete({
+        user: authenticatedUserId,
         ...validatedDeletePhaseDataParams,
       });
 
