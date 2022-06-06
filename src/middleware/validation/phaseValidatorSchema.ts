@@ -40,10 +40,25 @@ const deletePhaseDataParametersValidationSchema = Joi.object({
   projectReferenceId: uuidValidationSchema,
 });
 
+const changeOrderPhaseDataValidatorSchema = Joi.array().items(
+  Joi.object({
+    _id: uuidValidationSchema,
+    user: Joi.string(),
+    phaseId: uuidValidationSchema,
+    projectReferenceId: uuidValidationSchema,
+    phaseName: stringContentValidationSchema,
+    phaseOrder: numberValidationSchema,
+    __v: numberValidationSchema,
+    createdAt: dateValidationSchema,
+    updateAt: dateValidationSchema,
+  })
+);
+
 export {
   createNewPhaseDataValidatorSchema,
   readPhaseValidationSchema,
   updatePhaseDataParametersValidationSchema,
   updatePhaseDataContentValidatorSchema,
   deletePhaseDataParametersValidationSchema,
+  changeOrderPhaseDataValidatorSchema,
 };

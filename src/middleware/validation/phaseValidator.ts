@@ -12,6 +12,7 @@ import {
   updatePhaseDataParametersValidationSchema,
   updatePhaseDataContentValidatorSchema,
   deletePhaseDataParametersValidationSchema,
+  changeOrderPhaseDataValidatorSchema,
 } from "./phaseValidatorSchema";
 
 import asyncHandler from "../../handlers/asyncHandler";
@@ -68,7 +69,6 @@ const readPhaseDataValidator = asyncHandler(
       const { sanitizedReadPhaseDataId, isReadPhaseDataId } = res.locals;
 
       if (isReadPhaseDataId == false) {
-  
         res.locals.validatedReadPhaseDataId = {};
         delete res.locals.isReadPhaseDataId;
         return next();
@@ -160,7 +160,7 @@ const deletePhaseDataValidator = asyncHandler(
       await deletePhaseDataParametersValidationSchema
         .validateAsync(sanitizedDeleteTaskDataParams, validationOptions)
         .then(({ value, warning, debug }: any) => {
-          res.locals.validatedDeletePhaseDataParams = { ...value };
+          res.locals.validatedDeletePhaseDataParams = [...value];
           delete res.locals.sanitizedDeleteTaskDataParams;
           return next();
         })
@@ -178,10 +178,54 @@ const deletePhaseDataValidator = asyncHandler(
     }
   }
 ) as RequestHandler;
+const changeOrderPhaseDataValidator = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { sanitizedChangeOrderPhaseData } = res.locals;
+
+      if (!Array.isArray(sanitizedChangeOrderPhaseData)) {
+        throw new ErrorHandler(
+          409,
+          "Invalid Data structure",
+          sanitizedChangeOrderPhaseData
+        );
+      }
+
+      res.locals.validatedChangeOrderPhaseData = [
+        ...sanitizedChangeOrderPhaseData,
+      ];
+
+      delete res.locals.sanitizedChangeOrderPhaseData;
+      return next();
+
+      // await changeOrderPhaseDataValidatorSchema
+      //   .validateAsync(sanitizedChangeOrderPhaseData, validationOptions)
+      //   .then(({ value, warning, debug }: any) => {
+      //     console.log(warning);
+      //     res.locals.validatedChangeOrderPhaseData = [...value];
+
+      //     delete res.locals.sanitizedChangeOrderPhaseData;
+      //     return next();
+      //   })
+      //   .catch((error: any) => {
+      //     throw new ErrorHandler(
+      //       409,
+      //       "There seems to be something wrong with the following fields",
+      //       error.details.map((err: any) => {
+      //         return err;
+      //       })
+      //     );
+      //   });
+    } catch (error: any) {
+      throw new ErrorHandler(error?.status, error?.message, error?.payload);
+    }
+  }
+) as RequestHandler;
 
 export {
   createPhaseDataValidator,
   readPhaseDataValidator,
   updatePhaseDataValidator,
   deletePhaseDataValidator,
+  changeOrderPhaseDataValidator,
 };

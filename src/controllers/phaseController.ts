@@ -84,9 +84,46 @@ const deletePhaseDataController = asyncHandler(
   }
 ) as RequestHandler;
 
+const changeOrderPhaseDataController = asyncHandler(
+  async (req: Request, res: Response) => {
+    try {
+      const { validatedChangeOrderPhaseData, refreshTokenAuthenticatedUserId } =
+        res.locals;
+
+      console.log(validatedChangeOrderPhaseData);
+
+      validatedChangeOrderPhaseData.forEach(async (phase: any) => {
+        await PhaseModel.findByIdAndUpdate(
+          { _id: phase._id },
+          { phaseOrder: phase.phaseOrder }
+        );
+      });
+
+      // const changeOrderPhaseData = await PhaseModel.updateMany(
+      //   {
+      //     user: refreshTokenAuthenticatedUserId,
+      //     projectReferenceId:
+      //       validatedChangeOrderPhaseData[0].projectReferenceId,
+      //   },
+      //   { ...validatedChangeOrderPhaseData },
+      //   { multi: true }
+      // );
+
+      // console.log(changeOrderPhaseData);
+
+      delete res.locals.validatedNewPhaseData;
+
+      res.json("updated");
+    } catch (error: any) {
+      throw new ErrorHandler(500, error.message, error);
+    }
+  }
+) as RequestHandler;
+
 export {
   createNewPhaseDataController,
   readPhaseDataController,
   updatePhaseDataController,
   deletePhaseDataController,
+  changeOrderPhaseDataController,
 };

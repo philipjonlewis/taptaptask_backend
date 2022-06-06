@@ -12,6 +12,7 @@ import {
   readPhaseDataSanitizer,
   updatePhaseDataSanitizer,
   deletePhaseDataSanitizer,
+  changeOrderPhaseDataSanitizer,
 } from "../middleware/sanitization/phaseSanitizer";
 
 import {
@@ -19,6 +20,7 @@ import {
   updatePhaseDataValidator,
   readPhaseDataValidator,
   deletePhaseDataValidator,
+  changeOrderPhaseDataValidator,
 } from "../middleware/validation/phaseValidator";
 
 import { userCredentialsVerifier } from "../middleware/verification/userCredentialsVerifier";
@@ -28,6 +30,7 @@ import {
   readPhaseDataController,
   updatePhaseDataController,
   deletePhaseDataController,
+  changeOrderPhaseDataController,
 } from "../controllers/phaseController";
 
 // Add a rate limiter middleware here
@@ -59,6 +62,15 @@ router
     updatePhaseDataValidator,
     userCredentialsVerifier,
     updatePhaseDataController,
+  ]);
+
+router
+  .route("/changeorder")
+  .patch([
+    changeOrderPhaseDataSanitizer,
+    changeOrderPhaseDataValidator,
+    userCredentialsVerifier,
+    changeOrderPhaseDataController,
   ]);
 
 router

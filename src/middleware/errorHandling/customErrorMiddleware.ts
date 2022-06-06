@@ -24,8 +24,8 @@ const customErrorMiddleware = async (
 
   return res
     .status(status)
-    .clearCookie("authentication-refresh", { path: "/" })
-    .clearCookie("authentication-access", { path: "/" })
+    // .clearCookie("authentication-refresh", { path: "/" })
+    // .clearCookie("authentication-access", { path: "/" })
     .json({
       code: status,
       status: false,

@@ -125,9 +125,39 @@ const deletePhaseDataSanitizer = asyncHandler(
   }
 ) as RequestHandler;
 
+const changeOrderPhaseDataSanitizer = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      let changeOrderPhaseData = req.body;
+      const { refreshTokenAuthenticatedUserId } = res.locals;
+
+      changeOrderPhaseData = changeOrderPhaseData.map((phaseData: any) => {
+        return {
+          ...phaseData,
+          phaseName: sanitizeHtml(
+            phaseData.phaseName.toString(),
+            sanitizationOptions
+          ).trim(),
+          // phaseOrder: sanitizeHtml(
+          //   phaseData.phaseOrder,
+          //   sanitizationOptions
+          // ).trim(),
+          user: refreshTokenAuthenticatedUserId,
+        };
+      });
+
+      res.locals.sanitizedChangeOrderPhaseData = [...changeOrderPhaseData];
+      return next();
+    } catch (error: any) {
+      throw new ErrorHandler(error?.status, error?.message, error?.payload);
+    }
+  }
+) as RequestHandler;
+
 export {
   createPhaseDataSanitizer,
   readPhaseDataSanitizer,
   updatePhaseDataSanitizer,
   deletePhaseDataSanitizer,
+  changeOrderPhaseDataSanitizer,
 };
