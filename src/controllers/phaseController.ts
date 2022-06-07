@@ -29,7 +29,7 @@ const readPhaseDataController = asyncHandler(
         res.locals;
 
       const phaseData = await PhaseModel.find({
-        user: refreshTokenAuthenticatedUserId,
+        // user: refreshTokenAuthenticatedUserId,
         ...validatedReadPhaseDataId,
       });
 
@@ -50,7 +50,10 @@ const updatePhaseDataController = asyncHandler(
         res.locals.validatedUpdatePhaseData;
 
       const updatedPhaseData = await PhaseModel.updateMany(
-        { user: refreshTokenAuthenticatedUserId, ...updatePhaseDataParameters },
+        {
+          // user: refreshTokenAuthenticatedUserId,
+          ...updatePhaseDataParameters,
+        },
         { ...updatePhaseDataContent }
       );
 
@@ -72,7 +75,7 @@ const deletePhaseDataController = asyncHandler(
       } = res.locals;
 
       const deletedPhaseData = await PhaseModel.findOneAndDelete({
-        user: refreshTokenAuthenticatedUserId,
+        // user: refreshTokenAuthenticatedUserId,
         ...validatedDeletePhaseDataParams,
       });
 
@@ -94,22 +97,13 @@ const changeOrderPhaseDataController = asyncHandler(
 
       validatedChangeOrderPhaseData.forEach(async (phase: any) => {
         await PhaseModel.findByIdAndUpdate(
-          { _id: phase._id },
+          {
+            // user:refreshTokenAuthenticatedUserId,
+            _id: phase._id,
+          },
           { phaseOrder: phase.phaseOrder }
         );
       });
-
-      // const changeOrderPhaseData = await PhaseModel.updateMany(
-      //   {
-      //     user: refreshTokenAuthenticatedUserId,
-      //     projectReferenceId:
-      //       validatedChangeOrderPhaseData[0].projectReferenceId,
-      //   },
-      //   { ...validatedChangeOrderPhaseData },
-      //   { multi: true }
-      // );
-
-      // console.log(changeOrderPhaseData);
 
       delete res.locals.validatedNewPhaseData;
 

@@ -6,9 +6,9 @@ import {
   Router,
 } from "express";
 
-import { refreshCookieAuthentication } from "../infosec/cookies/authentication/cookieAuthentication";
+// import { refreshCookieAuthentication } from "../infosec/cookies/authentication/cookieAuthentication";
 
-import { userCredentialsVerifier } from "../middleware/verification/userCredentialsVerifier";
+import { userCredentialsVerifier } from "../../middleware/verification/userCredentialsVerifier";
 
 import userAgent from "express-useragent";
 
@@ -21,21 +21,21 @@ import {
   logInUserDataSanitizer,
   updateUserDataSanitizer,
   deleteUserDataSanitizer,
-} from "../middleware/sanitization/authSanitizer";
+} from "../../middleware/sanitization/authSanitizer";
 
 import {
   signUpUserDataValidator,
   logInUserDataSValidator,
   updateUserDataValidator,
   deleteUserDataValidator,
-} from "../middleware/validation/authValidator";
+} from "../../middleware/validation/authValidator";
 
 import {
   signUpUserDataController,
   logInUserDataController,
   updateUserDataController,
   deleteUserDataController,
-} from "../controllers/authController";
+} from "../../controllers/authController";
 
 router
   .route("/signup")
@@ -58,7 +58,7 @@ router
 router
   .route("/update")
   .patch([
-    refreshCookieAuthentication,
+    // refreshCookieAuthentication,
     updateUserDataSanitizer,
     updateUserDataValidator,
     userCredentialsVerifier,
@@ -68,7 +68,7 @@ router
 router
   .route("/delete")
   .delete([
-    refreshCookieAuthentication,
+    // refreshCookieAuthentication,
     deleteUserDataSanitizer,
     deleteUserDataValidator,
     userCredentialsVerifier,

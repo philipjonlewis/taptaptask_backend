@@ -29,7 +29,7 @@ const readTaskDataController = asyncHandler(
         res.locals;
       console.log(refreshTokenAuthenticatedUserId);
       const taskData = await TaskModel.find({
-        user: refreshTokenAuthenticatedUserId,
+        // user: refreshTokenAuthenticatedUserId,
         ...validatedReadTaskDataId,
       });
       // 629db2e331f8a5f114d8af88
@@ -51,7 +51,10 @@ const updateTaskDataController = asyncHandler(
         res.locals.validatedUpdateTaskData;
 
       const updatedTaskData = await TaskModel.updateMany(
-        { user: refreshTokenAuthenticatedUserId, ...updateTaskDataParameters },
+        {
+          // user: refreshTokenAuthenticatedUserId,
+          ...updateTaskDataParameters,
+        },
         { ...updateTaskDataContent }
       );
 
@@ -71,7 +74,7 @@ const deleteTaskDataController = asyncHandler(
         res.locals;
 
       const deletedTaskData = await TaskModel.findOneAndDelete({
-        user: refreshTokenAuthenticatedUserId,
+        // user: refreshTokenAuthenticatedUserId,
         ...validatedDeleteTaskDataParams,
       });
 

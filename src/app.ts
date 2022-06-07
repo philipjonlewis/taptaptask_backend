@@ -28,12 +28,12 @@ import { databaseConnection } from "./model/dbConnection";
 
 import customErrorMiddleware from "./middleware/errorHandling/customErrorMiddleware";
 
-import authRoutes from "./routes/authRoutes";
-import projectRoutes from "./routes/projectRoutes";
-import phaseRoutes from "./routes/phaseRoutes";
-import taskRoutes from "./routes/taskRoutes";
+import authRoutes from "./handlers/routes/authRoutes";
+import projectRoutes from "./handlers/routes/projectRoutes";
+import phaseRoutes from "./handlers/routes/phaseRoutes";
+import taskRoutes from "./handlers/routes/taskRoutes";
 
-import aggregationRoute from "./routes/aggregationRoute";
+import aggregationRoute from "./handlers/routes/aggregationRoute";
 
 import { projectDbSeeder, phaseDbSeeder, taskDbSeeder } from "./model/dbSeeder";
 
@@ -60,7 +60,8 @@ app.set("trust proxy", 1);
 
 app.use(
   cors({
-    origin: "http://192.168.0.25:3000",
+    origin: "http://169.254.26.231:3000",
+    // origin: "http://192.168.0.25:3000" ,
     methods: ["GET", "POST", "PATCH", "DELETE"],
     credentials: true,
   })
@@ -75,7 +76,8 @@ databaseConnection();
 
 app.use(function (req, res, next) {
   res.header("Content-Type", "application/json;charset=UTF-8");
-  res.header("Access-Control-Allow-Credentials", "http://192.168.0.25:3000");
+  res.header("Access-Control-Allow-Credentials", "http://169.254.26.231:3000");
+  // res.header("Access-Control-Allow-Credentials", "http://192.168.0.25:3000" );
   res.header("Access-Control-Allow-Credentials", "true");
   res.header(
     "Access-Control-Allow-Headers",
@@ -100,6 +102,9 @@ app.get("*", (req, res) => {
 
 app.use(customErrorMiddleware);
 
-app.listen(process.env.PORT, () => {
-  console.log(`App listening on port ${process.env.PORT}!`);
+app.listen(4000, () => {
+  console.log(`App listening on port ${4000}!`);
 });
+// app.listen(process.env.PORT, () => {
+//   console.log(`App listening on port ${process.env.PORT}!`);
+// });

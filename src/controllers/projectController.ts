@@ -31,7 +31,7 @@ const readProjectDataController = asyncHandler(
         res.locals;
 
       const projectData = await ProjectModel.find({
-        user: refreshTokenAuthenticatedUserId,
+        // user: refreshTokenAuthenticatedUserId,
         ...validatedReadProjectDataId,
       });
 
@@ -53,7 +53,7 @@ const updateProjectDataController = asyncHandler(
 
       const updatedProjectData = await ProjectModel.updateMany(
         {
-          user: refreshTokenAuthenticatedUserId,
+          // user: refreshTokenAuthenticatedUserId,
           ...updateProjectDataParameters,
         },
         { ...updateProjectDataContent }
@@ -77,7 +77,7 @@ const deleteProjectDataController = asyncHandler(
       } = res.locals;
 
       const deletedProjectData = await ProjectModel.findOneAndDelete({
-        user: refreshTokenAuthenticatedUserId,
+        // user: refreshTokenAuthenticatedUserId,
         ...validatedDeleteProjectDataParams,
       });
 

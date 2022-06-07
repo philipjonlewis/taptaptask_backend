@@ -1,9 +1,9 @@
 import express from "express";
-import { PhaseModel } from "../model/dbModel";
+import { PhaseModel } from "../../model/dbModel";
 
 const router = express.Router();
 
-import TaskModel from "../model/dbModel/taskModel";
+import TaskModel from "../../model/dbModel/taskModel";
 
 router.route("/tasks/count/:projectId/:phaseId").get(async (req, res) => {
   const { projectId, phaseId } = req.params;
