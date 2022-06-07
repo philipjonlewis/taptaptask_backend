@@ -2,10 +2,10 @@ import { Router } from "express";
 
 const router = Router();
 
-// import {
-//   refreshCookieAuthentication,
-//   accessCookieAuthentication,
-// } from "../infosec/cookies/authentication/cookieAuthentication";
+import {
+  refreshCookieAuthentication,
+  accessCookieAuthentication,
+} from "../infosec/cookies/authentication/cookieAuthentication";
 
 import {
   createPhaseDataSanitizer,
@@ -13,7 +13,7 @@ import {
   updatePhaseDataSanitizer,
   deletePhaseDataSanitizer,
   changeOrderPhaseDataSanitizer,
-} from "../../middleware/sanitization/phaseSanitizer";
+} from "../middleware/sanitization/phaseSanitizer";
 
 import {
   createPhaseDataValidator,
@@ -21,9 +21,9 @@ import {
   readPhaseDataValidator,
   deletePhaseDataValidator,
   changeOrderPhaseDataValidator,
-} from "../../middleware/validation/phaseValidator";
+} from "../middleware/validation/phaseValidator";
 
-import { userCredentialsVerifier } from "../../middleware/verification/userCredentialsVerifier";
+import { userCredentialsVerifier } from "../middleware/verification/userCredentialsVerifier";
 
 import {
   createNewPhaseDataController,
@@ -31,11 +31,11 @@ import {
   updatePhaseDataController,
   deletePhaseDataController,
   changeOrderPhaseDataController,
-} from "../../controllers/phaseController";
+} from "../controllers/phaseController";
 
 // Add a rate limiter middleware here
 
-// router.use([refreshCookieAuthentication, accessCookieAuthentication]);
+router.use([refreshCookieAuthentication, accessCookieAuthentication]);
 
 router
   .route("/create")

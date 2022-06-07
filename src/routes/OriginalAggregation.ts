@@ -1,9 +1,9 @@
 import express from "express";
-import { PhaseModel } from "../../model/dbModel";
+import { PhaseModel } from "../model/dbModel";
 
 const router = express.Router();
 
-import TaskModel from "../../model/dbModel/taskModel";
+import TaskModel from "../model/dbModel/taskModel";
 
 router.route("/tasks/count/:projectId/:phaseId").get(async (req, res) => {
   const { projectId, phaseId } = req.params;
@@ -44,9 +44,9 @@ router
   .route("/tasks/date/:projectId/:phaseReferenceId")
   .get(async (req, res) => {
     const { projectId, phaseReferenceId } = req.params;
+
     const today = new Date();
     const yesterday = new Date(today);
-
     yesterday.setDate(yesterday.getDate() - 1);
 
     const modelMatch = {

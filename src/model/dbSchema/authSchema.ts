@@ -7,13 +7,13 @@ import { v4 as uuidV4 } from "uuid";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
-// const privateKey = fs.readFileSync(
-//   path.resolve(
-//     __dirname,
-//     "../../infosec/keys/refreshTokenKeys/refreshTokenPrivate.key"
-//   ),
-//   "utf8"
-// );
+const privateKey = fs.readFileSync(
+  path.resolve(
+    __dirname,
+    "../../infosec/keys/refreshTokenKeys/refreshTokenPrivate.key"
+  ),
+  "utf8"
+);
 
 const authSchema = new Schema(
   {
@@ -101,24 +101,24 @@ const authSchema = new Schema(
 authSchema.pre("save", async function (next) {
   try {
     // //expires in 28 days
-    // const refreshToken = jwt.sign({ token: await this._id }, privateKey, {
-    //   issuer: await this._id.toString(),
-    //   subject: await this.email,
-    //   audience: "/",
-    //   expiresIn: "672h",
-    //   algorithm: "RS256",
-    // });
-    // //expires in 1 day
-    // const accessToken = jwt.sign({ token: await this._id }, privateKey, {
-    //   issuer: await this._id.toString(),
-    //   subject: await this.email,
-    //   audience: "/",
-    //   expiresIn: "24h",
-    //   algorithm: "RS256",
-    // });
+    const refreshToken = jwt.sign({ token: await this._id }, privateKey, {
+      issuer: await this._id.toString(),
+      subject: await this.email,
+      audience: "/",
+      expiresIn: "672h",
+      algorithm: "RS256",
+    });
+    //expires in 1 day
+    const accessToken = jwt.sign({ token: await this._id }, privateKey, {
+      issuer: await this._id.toString(),
+      subject: await this.email,
+      audience: "/",
+      expiresIn: "24h",
+      algorithm: "RS256",
+    });
 
-    // await this.refreshTokens.push(refreshToken);
-    // await this.accessTokens.push(accessToken);
+    await this.refreshTokens.push(refreshToken);
+    await this.accessTokens.push(accessToken);
 
     if (!this.isModified("password")) {
       return next();

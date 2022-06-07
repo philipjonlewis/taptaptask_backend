@@ -2,37 +2,37 @@ import { Router } from "express";
 
 const router = Router();
 
-// import {
-//   refreshCookieAuthentication,
-//   accessCookieAuthentication,
-// } from "../infosec/cookies/authentication/cookieAuthentication";
+import {
+  refreshCookieAuthentication,
+  accessCookieAuthentication,
+} from "../infosec/cookies/authentication/cookieAuthentication";
 
 import {
   createProjectDataSanitizer,
   readProjectDataSanitizer,
   updateProjectDataSanitizer,
   deleteProjectDataSanitizer,
-} from "../../middleware/sanitization/projectSanitizer";
+} from "../middleware/sanitization/projectSanitizer";
 
 import {
   createProjectDataValidator,
   updateProjectDataValidator,
   readProjectDataValidator,
   deleteProjectDataValidator,
-} from "../../middleware/validation/projectValidator";
+} from "../middleware/validation/projectValidator";
 
-import { userCredentialsVerifier } from "../../middleware/verification/userCredentialsVerifier";
+import { userCredentialsVerifier } from "../middleware/verification/userCredentialsVerifier";
 
 import {
   createNewProjectDataController,
   readProjectDataController,
   updateProjectDataController,
   deleteProjectDataController,
-} from "../../controllers/projectController";
+} from "../controllers/projectController";
 
 // Add a rate limiter middleware here
 
-// router.use([refreshCookieAuthentication, accessCookieAuthentication]);
+router.use([refreshCookieAuthentication, accessCookieAuthentication]);
 
 router
   .route("/create")
