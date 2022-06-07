@@ -1,4 +1,5 @@
 import express from "express";
+import { PhaseModel } from "../model/dbModel";
 
 const router = express.Router();
 
@@ -128,5 +129,15 @@ router
 
     res.json(allTasks);
   });
+
+router.route("/phase/:projectId").get(async (req, res) => {
+  const { projectId } = req.params;
+
+  const filteredPhases = await PhaseModel.find({
+    projectReferenceId: projectId,
+  });
+
+  res.json(filteredPhases);
+});
 
 export default router;
