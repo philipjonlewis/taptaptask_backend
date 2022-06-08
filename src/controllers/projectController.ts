@@ -17,7 +17,7 @@ const createNewProjectDataController = asyncHandler(
 
       delete res.locals.validatedNewProjectData;
 
-      res.json(addedProjectData);
+      res.send(validatedNewProjectData);
     } catch (error: any) {
       throw new ErrorHandler(500, error.message, error);
     }
