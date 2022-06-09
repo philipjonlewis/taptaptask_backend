@@ -71,29 +71,24 @@ const updateTaskDataSanitizer = asyncHandler(
     try {
       let [updateTaskDataParameters, updateTaskDataContent] = req.body;
 
-      if (updateTaskDataContent.taskContent == undefined) {
-        res.locals.sanitizedData = {
+      // console.log(req.body);
+
+      if (updateTaskDataContent.taskContent) {
+        updateTaskDataContent = {
+          ...updateTaskDataContent,
+          taskContent: sanitizeHtml(
+            updateTaskDataContent.taskContent.toString().trim(),
+            sanitizationOptions
+          ),
+        };
+
+        res.locals.sanitizedUpdateTaskData = {
           updateTaskDataParameters,
           updateTaskDataContent,
         };
+
         return next();
       }
-
-      updateTaskDataContent = {
-        ...updateTaskDataContent,
-        taskContent: sanitizeHtml(
-          updateTaskDataContent.taskContent.toString().trim(),
-          sanitizationOptions
-        ),
-        dateOfDeadline: sanitizeHtml(
-          updateTaskDataContent.dateOfDeadline.toString().trim(),
-          sanitizationOptions
-        ),
-        isCompleted: sanitizeHtml(
-          updateTaskDataContent.isCompleted.toString().trim(),
-          sanitizationOptions
-        ),
-      };
 
       res.locals.sanitizedUpdateTaskData = {
         updateTaskDataParameters,
@@ -110,10 +105,9 @@ const updateTaskDataSanitizer = asyncHandler(
 const deleteTaskDataSanitizer = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { user, taskId, projectReferenceId, phaseReferenceId } = req.body;
+      const { taskId, projectReferenceId, phaseReferenceId } = req.body;
 
       const sanitizedDeleteDataParams = {
-        user: sanitizeHtml(user, sanitizationOptions),
         taskId: sanitizeHtml(taskId, sanitizationOptions),
         projectReferenceId: sanitizeHtml(
           projectReferenceId,

@@ -73,6 +73,7 @@ const updatePhaseDataSanitizer = asyncHandler(
           updatePhaseDataParameters,
           updatePhaseDataContent,
         };
+
         return next();
       }
 
@@ -80,10 +81,6 @@ const updatePhaseDataSanitizer = asyncHandler(
         ...updatePhaseDataContent,
         phaseName: sanitizeHtml(
           updatePhaseDataContent.phaseName.toString().trim(),
-          sanitizationOptions
-        ),
-        phaseOrder: sanitizeHtml(
-          updatePhaseDataContent.phaseOrder.toString().trim(),
           sanitizationOptions
         ),
       };
@@ -103,10 +100,9 @@ const updatePhaseDataSanitizer = asyncHandler(
 const deletePhaseDataSanitizer = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { user, phaseId, projectReferenceId } = req.body;
+      const { phaseId, projectReferenceId } = req.body;
 
       const sanitizedDeletePhaseDataParams = {
-        user: sanitizeHtml(user, sanitizationOptions),
         phaseId: sanitizeHtml(phaseId, sanitizationOptions),
         projectReferenceId: sanitizeHtml(
           projectReferenceId,

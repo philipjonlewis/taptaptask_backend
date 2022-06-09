@@ -24,7 +24,7 @@ const readProjectValidationSchema = Joi.object({
 });
 
 const updateProjectDataParametersValidationSchema = Joi.object({
-  user: uuidValidationSchema,
+  user: Joi.string(),
   projectId: uuidValidationSchema,
 });
 
@@ -35,7 +35,7 @@ const updateProjectDataContentValidatorSchema = Joi.object({
 });
 
 const deleteProjectDataParametersValidationSchema = Joi.object({
-  user: uuidValidationSchema,
+  user: Joi.string(),
   projectId: uuidValidationSchema,
 });
 

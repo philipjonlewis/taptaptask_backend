@@ -103,12 +103,14 @@ const readProjectDataValidator = asyncHandler(
 const updateProjectDataValidator = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
+
       let { updateProjectDataParameters, updateProjectDataContent } =
         res.locals.sanitizedUpdateProjectData;
 
       await updateProjectDataParametersValidationSchema
         .validateAsync(updateProjectDataParameters, validationOptions)
         .then(({ value, warning, debug }: any) => {
+      
           updateProjectDataParameters = {
             ...value,
           };

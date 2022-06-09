@@ -155,13 +155,14 @@ const updatePhaseDataValidator = asyncHandler(
 const deletePhaseDataValidator = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { sanitizedDeleteTaskDataParams } = res.locals;
+      const { sanitizedDeletePhaseDataParams } = res.locals;
 
       await deletePhaseDataParametersValidationSchema
-        .validateAsync(sanitizedDeleteTaskDataParams, validationOptions)
+        .validateAsync(sanitizedDeletePhaseDataParams, validationOptions)
         .then(({ value, warning, debug }: any) => {
-          res.locals.validatedDeletePhaseDataParams = [...value];
-          delete res.locals.sanitizedDeleteTaskDataParams;
+          res.locals.validatedDeletePhaseDataParams = { ...value };
+
+          delete res.locals.sanitizedDeletePhaseDataParams;
           return next();
         })
         .catch((error: any) => {

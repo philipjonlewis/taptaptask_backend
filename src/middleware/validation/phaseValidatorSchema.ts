@@ -24,18 +24,15 @@ const readPhaseValidationSchema = Joi.object({
 });
 
 const updatePhaseDataParametersValidationSchema = Joi.object({
-  user: uuidValidationSchema,
   phaseId: uuidValidationSchema,
   projectReferenceId: uuidValidationSchema,
 });
 
 const updatePhaseDataContentValidatorSchema = Joi.object({
   phaseName: Joi.string().max(128),
-  phaseOrder: numberValidationSchema,
 });
 
 const deletePhaseDataParametersValidationSchema = Joi.object({
-  user: uuidValidationSchema,
   phaseId: uuidValidationSchema,
   projectReferenceId: uuidValidationSchema,
 });

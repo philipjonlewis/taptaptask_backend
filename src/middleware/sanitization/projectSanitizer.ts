@@ -75,14 +75,19 @@ const updateProjectDataSanitizer = asyncHandler(
     try {
       let [updateProjectDataParameters, updateProjectDataContent] = req.body;
 
+      const { refreshTokenAuthenticatedUserId } = res.locals;
+
+      updateProjectDataParameters.user = refreshTokenAuthenticatedUserId;
+
       if (
         updateProjectDataContent.projectName == undefined ||
         updateProjectDataContent.projectDescription == undefined
       ) {
-        res.locals.sanitizedUpdatePhaseData = {
+        res.locals.sanitizedUpdateProjectData = {
           updateProjectDataParameters,
           updateProjectDataContent,
         };
+
         return next();
       }
 
@@ -109,7 +114,7 @@ const updateProjectDataSanitizer = asyncHandler(
 
       return next();
     } catch (error: any) {
-      throw new ErrorHandler(500, error.message, {});
+      throw new ErrorHandler(500, error.message, error);
     }
   }
 ) as RequestHandler;
@@ -117,11 +122,13 @@ const updateProjectDataSanitizer = asyncHandler(
 const deleteProjectDataSanitizer = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { user, projectId } = req.body;
+      const { projectId } = req.body;
+      const { refreshTokenAuthenticatedUserId } = res.locals;
 
       const sanitizedDeleteProjectDataParams = {
-        user: sanitizeHtml(user, sanitizationOptions),
+        // user: sanitizeHtml(user, sanitizationOptions),
         projectId: sanitizeHtml(projectId, sanitizationOptions),
+        user: refreshTokenAuthenticatedUserId,
       };
 
       res.locals.sanitizedDeleteProjectDataParams = {

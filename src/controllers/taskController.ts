@@ -74,7 +74,7 @@ const deleteTaskDataController = asyncHandler(
         res.locals;
 
       const deletedTaskData = await TaskModel.findOneAndDelete({
-        // user: refreshTokenAuthenticatedUserId,
+        user: refreshTokenAuthenticatedUserId,
         ...validatedDeleteTaskDataParams,
       });
 

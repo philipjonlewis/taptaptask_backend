@@ -28,11 +28,9 @@ const readTaskValidationSchema = Joi.object({
 });
 
 const updateTaskDataParametersValidationSchema = Joi.object({
-  user: uuidValidationSchema,
   taskId: uuidValidationSchema,
   projectReferenceId: uuidValidationSchema,
   phaseReferenceId: uuidValidationSchema,
-  isCompleted: Joi.boolean().sensitive(),
 });
 
 const updateTaskDataContentValidatorSchema = Joi.object({
@@ -42,7 +40,6 @@ const updateTaskDataContentValidatorSchema = Joi.object({
 });
 
 const deleteTaskParametersValidationSchema = Joi.object({
-  user: uuidValidationSchema,
   taskId: uuidValidationSchema,
   projectReferenceId: uuidValidationSchema,
   phaseReferenceId: uuidValidationSchema,
