@@ -4,7 +4,7 @@ import asyncHandler from "../handlers/asyncHandler";
 
 import ErrorHandler from "../middleware/errorHandling/modifiedErrorHandler";
 
-import { ProjectModel } from "../model/dbModel";
+import { PhaseModel, ProjectModel, TaskModel } from "../model/dbModel";
 
 const createNewProjectDataController = asyncHandler(
   async (req: Request, res: Response) => {
@@ -53,7 +53,7 @@ const updateProjectDataController = asyncHandler(
 
       const updatedProjectData = await ProjectModel.updateMany(
         {
-          // user: refreshTokenAuthenticatedUserId,
+          user: refreshTokenAuthenticatedUserId,
           ...updateProjectDataParameters,
         },
         { ...updateProjectDataContent }
@@ -80,8 +80,18 @@ const deleteProjectDataController = asyncHandler(
       } = res.locals;
 
       const deletedProjectData = await ProjectModel.findOneAndDelete({
-        // user: refreshTokenAuthenticatedUserId,
+        user: refreshTokenAuthenticatedUserId,
         ...validatedDeleteProjectDataParams,
+      });
+
+      await PhaseModel.deleteMany({
+        user: refreshTokenAuthenticatedUserId,
+        projectReferenceId: validatedDeleteProjectDataParams.projectId,
+      });
+
+      await TaskModel.deleteMany({
+        user: refreshTokenAuthenticatedUserId,
+        projectReferenceId: validatedDeleteProjectDataParams.projectId,
       });
 
       delete res.locals.validatedDeleteProjectDataParams;

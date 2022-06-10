@@ -4,7 +4,7 @@ import asyncHandler from "../handlers/asyncHandler";
 
 import ErrorHandler from "../middleware/errorHandling/modifiedErrorHandler";
 
-import { PhaseModel } from "../model/dbModel";
+import { PhaseModel, TaskModel } from "../model/dbModel";
 
 const createNewPhaseDataController = asyncHandler(
   async (req: Request, res: Response) => {
@@ -77,6 +77,10 @@ const deletePhaseDataController = asyncHandler(
       const deletedPhaseData = await PhaseModel.findOneAndDelete({
         user: refreshTokenAuthenticatedUserId,
         ...validatedDeletePhaseDataParams,
+      });
+
+      await TaskModel.deleteMany({
+        phaseReferenceId: validatedDeletePhaseDataParams.phaseId,
       });
 
       delete res.locals.validatedDeletePhaseDataParams;

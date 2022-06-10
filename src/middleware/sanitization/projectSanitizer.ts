@@ -49,6 +49,7 @@ const createProjectDataSanitizer = asyncHandler(
 
 const readProjectDataSanitizer = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
+
     try {
       let { projectId } = req.query;
 

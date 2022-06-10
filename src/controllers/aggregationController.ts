@@ -82,4 +82,86 @@ const readPhasesByProjectController = asyncHandler(
   }
 ) as RequestHandler;
 
-export { readTasksByDateController, readPhasesByProjectController };
+const deleteTasksByDateController = asyncHandler(
+  async (req: Request, res: Response) => {
+    try {
+      const {
+        validatedDeleteTasksByDate: { dateOfDeadline },
+        refreshTokenAuthenticatedUserId,
+      } = res.locals;
+
+      console.log(res.locals);
+
+      const deletedTasks = await TaskModel.deleteMany({
+        user: refreshTokenAuthenticatedUserId,
+        dateOfDeadline: dateOfDeadline,
+      });
+
+      res.json(deletedTasks);
+    } catch (error: any) {
+      throw new ErrorHandler(500, error.message, error);
+    }
+  }
+) as RequestHandler;
+
+const readLapsedTasksController = asyncHandler(
+  async (req: Request, res: Response) => {
+    try {
+      const {
+        validatedSanitizedPhaseIdData: { phaseId },
+        refreshTokenAuthenticatedUserId,
+      } = res.locals;
+    
+      const today = new Date();
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+
+      const modelMatch = {
+        user: refreshTokenAuthenticatedUserId,
+        // projectReferenceId: projectReferenceId,
+        phaseReferenceId: phaseId,
+        dateOfDeadline: {
+          $lte: new Date(yesterday),
+        },
+        // ...req.query,
+      };
+
+      const lapsedTasks = await TaskModel.aggregate([
+        {
+          $match: modelMatch,
+        },
+        {
+          $project: {
+            user: "$user",
+            taskId: "$taskId",
+            projectReferenceId: "$projectReferenceId",
+            phaseReferenceId: "$phaseReferenceId",
+            taskContent: "$taskContent",
+            dateOfDeadline: "$dateOfDeadline",
+            isCompleted: "$isCompleted",
+            isPriority: "$isPriority",
+            isLapsed: "$isLapsed",
+          },
+        },
+        {
+          $group: {
+            _id: "$dateOfDeadline",
+            taskContent: { $push: "$$CURRENT" },
+          },
+        },
+        { $sort: { _id: 1 } },
+      ]);
+
+      res.json(lapsedTasks);
+    } catch (error: any) {
+      throw new ErrorHandler(500, error.message, error);
+    }
+  }
+) as RequestHandler;
+
+export {
+  readTasksByDateController,
+  readPhasesByProjectController,
+  deleteTasksByDateController,
+  readLapsedTasksController,
+};

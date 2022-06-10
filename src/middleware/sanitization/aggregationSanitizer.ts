@@ -16,7 +16,12 @@ const readTasksByDateSanitizer = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { projectReferenceId, phaseReferenceId } = req.query;
-      console.log(req.body);
+
+      // this code below exists because we cant set skip true in the aggregate rtk query
+      if (!phaseReferenceId) {
+        return res.send("ok");
+      }
+
       if (projectReferenceId !== undefined && phaseReferenceId !== undefined) {
         res.locals.sanitizedReadTasksByDateData = {
           projectReferenceId: sanitizeHtml(
@@ -58,4 +63,43 @@ const readPhasesByProjectSanitizer = asyncHandler(
   }
 ) as RequestHandler;
 
-export { readTasksByDateSanitizer, readPhasesByProjectSanitizer };
+const deleteTasksByDateSanitizer = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { dateOfDeadline } = req.body;
+
+      res.locals.sanitizedDeleteTasksByDateSanitizer = {
+        dateOfDeadline: sanitizeHtml(
+          dateOfDeadline.toString().trim(),
+          sanitizationOptions
+        ),
+      };
+
+      return next();
+    } catch (error: any) {
+      throw new ErrorHandler(500, error.message, {});
+    }
+  }
+) as RequestHandler;
+
+const readLapsedTasksSanitizer = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { phaseId } = req.query as { phaseId: string };
+      res.locals.sanitizedPhaseId = {
+        phaseId: sanitizeHtml(phaseId.toString().trim(), sanitizationOptions),
+      };
+
+      return next();
+    } catch (error: any) {
+      throw new ErrorHandler(500, error.message, {});
+    }
+  }
+) as RequestHandler;
+
+export {
+  readTasksByDateSanitizer,
+  readPhasesByProjectSanitizer,
+  deleteTasksByDateSanitizer,
+  readLapsedTasksSanitizer,
+};

@@ -13,11 +13,15 @@ import {
 import {
   readTasksByDateSanitizer,
   readPhasesByProjectSanitizer,
+  deleteTasksByDateSanitizer,
+  readLapsedTasksSanitizer,
 } from "../middleware/sanitization/aggregationSanitizer";
 
 import {
   readTasksByDateValidator,
   readPhasesByProjectValidator,
+  deleteTasksByDateValidator,
+  readLapsedTasksValidator,
 } from "../middleware/validation/aggregationValidator";
 
 import { userCredentialsVerifier } from "../middleware/verification/userCredentialsVerifier";
@@ -25,6 +29,8 @@ import { userCredentialsVerifier } from "../middleware/verification/userCredenti
 import {
   readTasksByDateController,
   readPhasesByProjectController,
+  deleteTasksByDateController,
+  readLapsedTasksController,
 } from "../controllers/aggregationController";
 
 router.use([refreshCookieAuthentication, accessCookieAuthentication]);
@@ -45,6 +51,24 @@ router
     readPhasesByProjectValidator,
     userCredentialsVerifier,
     readPhasesByProjectController,
+  ]);
+
+router
+  .route("/tasks/deletebydate")
+  .delete([
+    deleteTasksByDateSanitizer,
+    deleteTasksByDateValidator,
+    userCredentialsVerifier,
+    deleteTasksByDateController,
+  ]);
+
+router
+  .route("/tasks/lapsed")
+  .get([
+    readLapsedTasksSanitizer,
+    readLapsedTasksValidator,
+    userCredentialsVerifier,
+    readLapsedTasksController,
   ]);
 
 export default router;

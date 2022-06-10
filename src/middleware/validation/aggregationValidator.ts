@@ -9,6 +9,8 @@ import express, {
 import {
   readTasksByDateValidationSchema,
   readPhasesByProjectValidationSchema,
+  deleteTasksByDateValidationSchema,
+  readLapsedTasksValidationSchema,
 } from "./aggregationValidatorSchema";
 
 import asyncHandler from "../../handlers/asyncHandler";
@@ -80,4 +82,66 @@ const readPhasesByProjectValidator = asyncHandler(
   }
 ) as RequestHandler;
 
-export { readTasksByDateValidator, readPhasesByProjectValidator };
+const deleteTasksByDateValidator = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { sanitizedDeleteTasksByDateSanitizer } = res.locals;
+
+      await deleteTasksByDateValidationSchema
+        .validateAsync(sanitizedDeleteTasksByDateSanitizer, validationOptions)
+        .then(({ value, warning, debug }: any) => {
+          res.locals.validatedDeleteTasksByDate = { ...value };
+
+          delete res.locals.sanitizedDeleteTasksByDateSanitizer;
+
+          return next();
+        })
+        .catch((error: any) => {
+          throw new ErrorHandler(
+            409,
+            "There seems to be something wrong with the following fields",
+            error.details.map((err: any) => {
+              return err;
+            })
+          );
+        });
+    } catch (error: any) {
+      throw new ErrorHandler(error?.status, error?.message, error?.payload);
+    }
+  }
+) as RequestHandler;
+
+const readLapsedTasksValidator = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { sanitizedPhaseId } = res.locals;
+
+      await readLapsedTasksValidationSchema
+        .validateAsync(sanitizedPhaseId, validationOptions)
+        .then(({ value, warning, debug }: any) => {
+          res.locals.validatedSanitizedPhaseIdData = { ...value };
+          delete res.locals.sanitizedPhaseId;
+    
+          return next();
+        })
+        .catch((error: any) => {
+          throw new ErrorHandler(
+            409,
+            "There seems to be something wrong with the following fields",
+            error.details.map((err: any) => {
+              return err;
+            })
+          );
+        });
+    } catch (error: any) {
+      throw new ErrorHandler(error?.status, error?.message, error?.payload);
+    }
+  }
+) as RequestHandler;
+
+export {
+  readTasksByDateValidator,
+  readPhasesByProjectValidator,
+  deleteTasksByDateValidator,
+  readLapsedTasksValidator,
+};

@@ -17,4 +17,17 @@ const readPhasesByProjectValidationSchema = Joi.object({
   projectReferenceId: uuidValidationSchema,
 });
 
-export { readTasksByDateValidationSchema, readPhasesByProjectValidationSchema };
+const deleteTasksByDateValidationSchema = Joi.object({
+  dateOfDeadline: dateValidationSchema,
+});
+
+const readLapsedTasksValidationSchema = Joi.object({
+  phaseId: uuidValidationSchema,
+});
+
+export {
+  readTasksByDateValidationSchema,
+  readPhasesByProjectValidationSchema,
+  deleteTasksByDateValidationSchema,
+  readLapsedTasksValidationSchema,
+};
