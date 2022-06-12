@@ -21,7 +21,14 @@ import {
   deleteProjectDataValidator,
 } from "../middleware/validation/projectValidator";
 
-import { userCredentialsVerifier } from "../middleware/verification/userCredentialsVerifier";
+import { userCredentialsAuthenticator } from "../middleware/authentication/authAuthenticator";
+
+import {
+  createProjectAuthorizer,
+  readProjectAuthorizer,
+  updateProjectAuthorizer,
+  deleteProjectAuthorizer,
+} from "../middleware/authorization/projectAuthorization";
 
 import {
   createNewProjectDataController,
@@ -32,41 +39,45 @@ import {
 
 // Add a rate limiter middleware here
 
-router.use([refreshCookieAuthentication, accessCookieAuthentication]);
+router.use([
+  refreshCookieAuthentication,
+  accessCookieAuthentication,
+  userCredentialsAuthenticator,
+]);
 
 router
   .route("/create")
   .post([
+    createProjectAuthorizer,
     createProjectDataSanitizer,
     createProjectDataValidator,
-    userCredentialsVerifier,
     createNewProjectDataController,
   ]);
 
 router
   .route("/read?:projectId")
   .get([
+    readProjectAuthorizer,
     readProjectDataSanitizer,
     readProjectDataValidator,
-    userCredentialsVerifier,
     readProjectDataController,
   ]);
 
 router
   .route("/update")
   .patch([
+    updateProjectAuthorizer,
     updateProjectDataSanitizer,
     updateProjectDataValidator,
-    userCredentialsVerifier,
     updateProjectDataController,
   ]);
 
 router
   .route("/delete")
   .delete([
+    deleteProjectAuthorizer,
     deleteProjectDataSanitizer,
     deleteProjectDataValidator,
-    userCredentialsVerifier,
     deleteProjectDataController,
   ]);
 

@@ -6,15 +6,22 @@ import {
   Router,
 } from "express";
 
-import { refreshCookieAuthentication } from "../infosec/cookies/authentication/cookieAuthentication";
-
-import { userCredentialsVerifier } from "../middleware/verification/userCredentialsVerifier";
-
 import userAgent from "express-useragent";
 
 const router = Router();
 
 router.use(userAgent.express());
+
+import {
+  refreshCookieAuthentication,
+  accessCookieAuthentication,
+} from "../infosec/cookies/authentication/cookieAuthentication";
+
+import {
+  userCredentialsAuthenticator,
+  signUpAuthenticator,
+  logInAuthenticator,
+} from "../middleware/authentication/authAuthenticator";
 
 import {
   signUpUserDataSanitizer,
@@ -25,7 +32,7 @@ import {
 
 import {
   signUpUserDataValidator,
-  logInUserDataSValidator,
+  logInUserDataValidator,
   updateUserDataValidator,
   deleteUserDataValidator,
 } from "../middleware/validation/authValidator";
@@ -42,7 +49,7 @@ router
   .post([
     signUpUserDataSanitizer,
     signUpUserDataValidator,
-    userCredentialsVerifier,
+    signUpAuthenticator,
     signUpUserDataController,
   ]);
 
@@ -50,8 +57,8 @@ router
   .route("/login")
   .post([
     logInUserDataSanitizer,
-    logInUserDataSValidator,
-    userCredentialsVerifier,
+    logInUserDataValidator,
+    logInAuthenticator,
     logInUserDataController,
   ]);
 
@@ -59,9 +66,10 @@ router
   .route("/update")
   .patch([
     refreshCookieAuthentication,
+    accessCookieAuthentication,
     updateUserDataSanitizer,
     updateUserDataValidator,
-    userCredentialsVerifier,
+    userCredentialsAuthenticator,
     updateUserDataController,
   ]);
 
@@ -69,9 +77,10 @@ router
   .route("/delete")
   .delete([
     refreshCookieAuthentication,
+    accessCookieAuthentication,
     deleteUserDataSanitizer,
     deleteUserDataValidator,
-    userCredentialsVerifier,
+    userCredentialsAuthenticator,
     deleteUserDataController,
   ]);
 

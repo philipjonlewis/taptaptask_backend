@@ -8,6 +8,13 @@ import {
 } from "../infosec/cookies/authentication/cookieAuthentication";
 
 import {
+  createTaskAuthorizer,
+  readTaskAuthorizer,
+  updateTaskAuthorizer,
+  deleteTaskAuthorizer,
+} from "../middleware/authorization/taskAuthorization";
+
+import {
   createTaskDataSanitizer,
   readTaskDataSanitizer,
   updateTaskDataSanitizer,
@@ -21,7 +28,7 @@ import {
   deleteTaskDataValidator,
 } from "../middleware/validation/taskValidator";
 
-import { userCredentialsVerifier } from "../middleware/verification/userCredentialsVerifier";
+import { userCredentialsAuthenticator } from "../middleware/authentication/authAuthenticator";
 
 import {
   createNewTaskDataController,
@@ -32,41 +39,45 @@ import {
 
 // Add a rate limiter middleware here
 
-router.use([refreshCookieAuthentication, accessCookieAuthentication]);
+router.use([
+  refreshCookieAuthentication,
+  accessCookieAuthentication,
+  userCredentialsAuthenticator,
+]);
 
 router
   .route("/create")
   .post([
+    createTaskAuthorizer,
     createTaskDataSanitizer,
     createTaskDataValidator,
-    userCredentialsVerifier,
     createNewTaskDataController,
   ]);
 
 router
   .route("/read?:taskId")
   .get([
+    readTaskAuthorizer,
     readTaskDataSanitizer,
     readTaskDataValidator,
-    userCredentialsVerifier,
     readTaskDataController,
   ]);
 
 router
   .route("/update")
   .patch([
+    updateTaskAuthorizer,
     updateTaskDataSanitizer,
     updateTaskDataValidator,
-    userCredentialsVerifier,
     updateTaskDataController,
   ]);
 
 router
   .route("/delete")
   .delete([
+    deleteTaskAuthorizer,
     deleteTaskDataSanitizer,
     deleteTaskDataValidator,
-    userCredentialsVerifier,
     deleteTaskDataController,
   ]);
 

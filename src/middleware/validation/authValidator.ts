@@ -53,7 +53,7 @@ const signUpUserDataValidator = asyncHandler(
   }
 ) as RequestHandler;
 
-const logInUserDataSValidator = asyncHandler(
+const logInUserDataValidator = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { sanitizedLogInUserData } = res.locals;
@@ -142,7 +142,7 @@ const deleteUserDataValidator = asyncHandler(
 
 export {
   signUpUserDataValidator,
-  logInUserDataSValidator,
+  logInUserDataValidator,
   updateUserDataValidator,
   deleteUserDataValidator,
 };

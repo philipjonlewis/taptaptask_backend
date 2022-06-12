@@ -8,6 +8,14 @@ import {
 } from "../infosec/cookies/authentication/cookieAuthentication";
 
 import {
+  createPhaseAuthorizer,
+  readPhaseAuthorizer,
+  updatePhaseAuthorizer,
+  changeOrderPhaseAuthorizer,
+  deletePhaseAuthorizer,
+} from "../middleware/authorization/phaseAuthorization";
+
+import {
   createPhaseDataSanitizer,
   readPhaseDataSanitizer,
   updatePhaseDataSanitizer,
@@ -23,7 +31,7 @@ import {
   changeOrderPhaseDataValidator,
 } from "../middleware/validation/phaseValidator";
 
-import { userCredentialsVerifier } from "../middleware/verification/userCredentialsVerifier";
+import { userCredentialsAuthenticator } from "../middleware/authentication/authAuthenticator";
 
 import {
   createNewPhaseDataController,
@@ -35,50 +43,54 @@ import {
 
 // Add a rate limiter middleware here
 
-router.use([refreshCookieAuthentication, accessCookieAuthentication]);
+router.use([
+  refreshCookieAuthentication,
+  accessCookieAuthentication,
+  userCredentialsAuthenticator,
+]);
 
 router
   .route("/create")
   .post([
+    createPhaseAuthorizer,
     createPhaseDataSanitizer,
     createPhaseDataValidator,
-    userCredentialsVerifier,
     createNewPhaseDataController,
   ]);
 
 router
   .route("/read?:phaseId")
   .get([
+    readPhaseAuthorizer,
     readPhaseDataSanitizer,
     readPhaseDataValidator,
-    userCredentialsVerifier,
     readPhaseDataController,
   ]);
 
 router
   .route("/update")
   .patch([
+    updatePhaseAuthorizer,
     updatePhaseDataSanitizer,
     updatePhaseDataValidator,
-    userCredentialsVerifier,
     updatePhaseDataController,
   ]);
 
 router
   .route("/changeorder")
   .patch([
+    changeOrderPhaseAuthorizer,
     changeOrderPhaseDataSanitizer,
     changeOrderPhaseDataValidator,
-    userCredentialsVerifier,
     changeOrderPhaseDataController,
   ]);
 
 router
   .route("/delete")
   .delete([
+    deletePhaseAuthorizer,
     deletePhaseDataSanitizer,
     deletePhaseDataValidator,
-    userCredentialsVerifier,
     deletePhaseDataController,
   ]);
 
