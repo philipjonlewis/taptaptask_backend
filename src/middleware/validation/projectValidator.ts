@@ -66,7 +66,6 @@ const readProjectDataValidator = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { sanitizedReadProjectDataId, isReadProjectDataId } = res.locals;
-
       if (isReadProjectDataId == false) {
         res.locals.validatedReadProjectDataId = {};
         delete res.locals.isReadProjectDataId;
@@ -103,14 +102,12 @@ const readProjectDataValidator = asyncHandler(
 const updateProjectDataValidator = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-
       let { updateProjectDataParameters, updateProjectDataContent } =
         res.locals.sanitizedUpdateProjectData;
 
       await updateProjectDataParametersValidationSchema
         .validateAsync(updateProjectDataParameters, validationOptions)
         .then(({ value, warning, debug }: any) => {
-      
           updateProjectDataParameters = {
             ...value,
           };

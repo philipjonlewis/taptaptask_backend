@@ -19,6 +19,7 @@ const createProjectAuthorizer = asyncHandler(
 const readProjectAuthorizer = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
+
       return next();
     } catch (error: any) {
       throw new ErrorHandler(500, error.message, {});

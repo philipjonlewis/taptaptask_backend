@@ -19,7 +19,7 @@ const signUpUserDataController = asyncHandler(
         userAgent: { ...(await userAgentCleaner(useragent)) },
       });
 
-      // await newUser.save();
+      await newUser.save();
 
       delete res.locals.validatedSignUpUserData;
       delete res.locals.useragent;

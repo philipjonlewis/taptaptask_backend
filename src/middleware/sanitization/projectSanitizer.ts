@@ -17,7 +17,8 @@ const createProjectDataSanitizer = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       let newProjectData = req.body;
-      const { refreshTokenAuthenticatedUserId } = res.locals;
+
+      const { accessTokenAuthenticatedUserId } = res.locals;
 
       newProjectData = newProjectData.map((projectData: any) => {
         return {
@@ -34,7 +35,7 @@ const createProjectDataSanitizer = asyncHandler(
             projectData.dateOfDeadline.toString().trim(),
             sanitizationOptions
           ),
-          user: refreshTokenAuthenticatedUserId,
+          user: accessTokenAuthenticatedUserId,
         };
       });
 
@@ -49,7 +50,6 @@ const createProjectDataSanitizer = asyncHandler(
 
 const readProjectDataSanitizer = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-
     try {
       let { projectId } = req.query;
 
@@ -64,6 +64,7 @@ const readProjectDataSanitizer = asyncHandler(
       ).trim();
 
       res.locals.sanitizedReadProjectDataId = projectId;
+
       return next();
     } catch (error: any) {
       throw new ErrorHandler(500, error.message, {});
@@ -76,41 +77,38 @@ const updateProjectDataSanitizer = asyncHandler(
     try {
       let [updateProjectDataParameters, updateProjectDataContent] = req.body;
 
-      const { refreshTokenAuthenticatedUserId } = res.locals;
+      const { accessTokenAuthenticatedUserId } = res.locals;
 
-      updateProjectDataParameters.user = refreshTokenAuthenticatedUserId;
-
-      if (
-        updateProjectDataContent.projectName == undefined ||
-        updateProjectDataContent.projectDescription == undefined
-      ) {
-        res.locals.sanitizedUpdateProjectData = {
-          updateProjectDataParameters,
-          updateProjectDataContent,
-        };
-
-        return next();
-      }
-
-      updateProjectDataContent = {
-        ...updateProjectDataContent,
-        projectName: sanitizeHtml(
-          updateProjectDataContent.projectName.toString().trim(),
-          sanitizationOptions
-        ),
-        projectDescription: sanitizeHtml(
-          updateProjectDataContent.projectDescription.toString().trim(),
-          sanitizationOptions
-        ),
-        dateOfDeadline: sanitizeHtml(
-          updateProjectDataContent.dateOfDeadline.toString().trim(),
-          sanitizationOptions
-        ),
+      const sanitizedUpdateProjectDataContent = {
+        ...(updateProjectDataContent.dateOfDeadline && {
+          dateOfDeadline: sanitizeHtml(
+            updateProjectDataContent.dateOfDeadline.toString().trim(),
+            sanitizationOptions
+          ),
+        }),
+        ...(updateProjectDataContent.projectName && {
+          projectName: sanitizeHtml(
+            updateProjectDataContent.projectName.toString().trim(),
+            sanitizationOptions
+          ),
+        }),
+        ...(updateProjectDataContent.projectDescription && {
+          projectDescription: sanitizeHtml(
+            updateProjectDataContent.projectDescription.toString().trim(),
+            sanitizationOptions
+          ),
+        }),
       };
 
       res.locals.sanitizedUpdateProjectData = {
-        updateProjectDataParameters,
-        updateProjectDataContent,
+        updateProjectDataParameters: {
+          user: accessTokenAuthenticatedUserId,
+          projectId: sanitizeHtml(
+            updateProjectDataParameters.projectId.toString().trim(),
+            sanitizationOptions
+          ),
+        },
+        updateProjectDataContent: { ...sanitizedUpdateProjectDataContent },
       };
 
       return next();

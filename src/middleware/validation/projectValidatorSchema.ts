@@ -31,7 +31,7 @@ const updateProjectDataParametersValidationSchema = Joi.object({
 const updateProjectDataContentValidatorSchema = Joi.object({
   projectName: Joi.string().max(128),
   projectDescription: Joi.string().max(128),
-  dateOfDeadline: dateValidationSchema,
+  dateOfDeadline: Joi.date(),
 });
 
 const deleteProjectDataParametersValidationSchema = Joi.object({

@@ -61,9 +61,6 @@ const updateProjectDataController = asyncHandler(
 
       delete res.locals.validatedUpdateProjectData;
 
-      console.log(updateProjectDataContent);
-      console.log(updatedProjectData);
-
       res.json(updatedProjectData);
     } catch (error: any) {
       throw new ErrorHandler(500, error.message, error);

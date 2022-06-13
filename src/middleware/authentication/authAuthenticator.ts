@@ -57,7 +57,7 @@ const userCredentialsAuthenticator = asyncHandler(
       const { accessTokenAuthenticatedUserId } = res.locals;
 
       const doesUserExist = await AuthModel.exists({
-        _id: accessTokenAuthenticatedUserId,
+        _id: accessTokenAuthenticatedUserId.toString(),
       });
 
       if (doesUserExist) {
