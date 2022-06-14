@@ -3,7 +3,7 @@ import asyncHandler from "../handlers/asyncHandler";
 
 import ErrorHandler from "../middleware/errorHandling/modifiedErrorHandler";
 
-import { AuthModel } from "../model/dbModel";
+import { AuthModel } from "../middleware/authorization/dbModel";
 
 import { userAgentCleaner } from "../utils/userAgentCleaner";
 

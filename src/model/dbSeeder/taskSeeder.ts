@@ -1,4 +1,4 @@
-import { TaskModel } from "../dbModel";
+import { TaskModel } from "../../middleware/authorization/dbModel";
 import { v4 as uuidv4 } from "uuid";
 
 const taskDbSeeder = async () => {

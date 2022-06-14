@@ -41,6 +41,8 @@ const createProjectDataSanitizer = asyncHandler(
 
       res.locals.sanitizedNewProjectData = [...newProjectData];
 
+   
+
       return next();
     } catch (error: any) {
       throw new ErrorHandler(500, error.message, {});

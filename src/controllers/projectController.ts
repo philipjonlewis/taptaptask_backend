@@ -4,7 +4,7 @@ import asyncHandler from "../handlers/asyncHandler";
 
 import ErrorHandler from "../middleware/errorHandling/modifiedErrorHandler";
 
-import { PhaseModel, ProjectModel, TaskModel } from "../model/dbModel";
+import { PhaseModel, ProjectModel, TaskModel } from "../middleware/authorization/dbModel";
 
 const createNewProjectDataController = asyncHandler(
   async (req: Request, res: Response) => {
@@ -27,11 +27,11 @@ const createNewProjectDataController = asyncHandler(
 const readProjectDataController = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const { validatedReadProjectDataId, refreshTokenAuthenticatedUserId } =
+      const { validatedReadProjectDataId, accessTokenAuthenticatedUserId } =
         res.locals;
 
       const projectData = await ProjectModel.find({
-        user: refreshTokenAuthenticatedUserId,
+        user: accessTokenAuthenticatedUserId,
         ...validatedReadProjectDataId,
       });
 
@@ -47,13 +47,13 @@ const readProjectDataController = asyncHandler(
 const updateProjectDataController = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const { refreshTokenAuthenticatedUserId } = res.locals;
+      const { accessTokenAuthenticatedUserId } = res.locals;
       const { updateProjectDataParameters, updateProjectDataContent } =
         res.locals.validatedUpdateProjectData;
 
       const updatedProjectData = await ProjectModel.updateMany(
         {
-          user: refreshTokenAuthenticatedUserId,
+          user: accessTokenAuthenticatedUserId,
           ...updateProjectDataParameters,
         },
         { ...updateProjectDataContent }
@@ -73,21 +73,21 @@ const deleteProjectDataController = asyncHandler(
     try {
       const {
         validatedDeleteProjectDataParams,
-        refreshTokenAuthenticatedUserId,
+        accessTokenAuthenticatedUserId,
       } = res.locals;
 
       const deletedProjectData = await ProjectModel.findOneAndDelete({
-        user: refreshTokenAuthenticatedUserId,
+        user: accessTokenAuthenticatedUserId,
         ...validatedDeleteProjectDataParams,
       });
 
       await PhaseModel.deleteMany({
-        user: refreshTokenAuthenticatedUserId,
+        user: accessTokenAuthenticatedUserId,
         projectReferenceId: validatedDeleteProjectDataParams.projectId,
       });
 
       await TaskModel.deleteMany({
-        user: refreshTokenAuthenticatedUserId,
+        user: accessTokenAuthenticatedUserId,
         projectReferenceId: validatedDeleteProjectDataParams.projectId,
       });
 

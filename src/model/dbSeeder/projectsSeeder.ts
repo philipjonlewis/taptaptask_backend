@@ -1,4 +1,4 @@
-import { ProjectModel } from "../dbModel";
+import { ProjectModel } from "../../middleware/authorization/dbModel";
 
 const projectDbSeeder = async () => {
   await ProjectModel.insertMany([

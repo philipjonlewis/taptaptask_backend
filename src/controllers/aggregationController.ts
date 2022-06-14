@@ -4,15 +4,15 @@ import asyncHandler from "../handlers/asyncHandler";
 
 import ErrorHandler from "../middleware/errorHandling/modifiedErrorHandler";
 
-import { TaskModel } from "../model/dbModel";
-import { PhaseModel } from "../model/dbModel";
+import { TaskModel } from "../middleware/authorization/dbModel";
+import { PhaseModel } from "../middleware/authorization/dbModel";
 
 const readTasksByDateController = asyncHandler(
   async (req: Request, res: Response) => {
     try {
       const {
         validatedReadTasksByDateData: { projectReferenceId, phaseReferenceId },
-        refreshTokenAuthenticatedUserId,
+        accessTokenAuthenticatedUserId,
       } = res.locals;
 
       const today = new Date();
@@ -20,7 +20,7 @@ const readTasksByDateController = asyncHandler(
       yesterday.setDate(yesterday.getDate() - 1);
 
       const modelMatch = {
-        user: refreshTokenAuthenticatedUserId,
+        user: accessTokenAuthenticatedUserId,
         projectReferenceId: projectReferenceId,
         phaseReferenceId: phaseReferenceId,
         dateOfDeadline: {
@@ -67,11 +67,11 @@ const readPhasesByProjectController = asyncHandler(
     try {
       const {
         validatedReadPhasesByProjectData: { projectReferenceId },
-        refreshTokenAuthenticatedUserId,
+        accessTokenAuthenticatedUserId,
       } = res.locals;
 
       const filteredPhases = await PhaseModel.find({
-        user: refreshTokenAuthenticatedUserId,
+        user: accessTokenAuthenticatedUserId,
         projectReferenceId: projectReferenceId,
       });
 
@@ -87,13 +87,13 @@ const deleteTasksByDateController = asyncHandler(
     try {
       const {
         validatedDeleteTasksByDate: { dateOfDeadline },
-        refreshTokenAuthenticatedUserId,
+        accessTokenAuthenticatedUserId,
       } = res.locals;
 
       console.log(res.locals);
 
       const deletedTasks = await TaskModel.deleteMany({
-        user: refreshTokenAuthenticatedUserId,
+        user: accessTokenAuthenticatedUserId,
         dateOfDeadline: dateOfDeadline,
       });
 
@@ -109,15 +109,15 @@ const readLapsedTasksController = asyncHandler(
     try {
       const {
         validatedSanitizedPhaseIdData: { phaseId },
-        refreshTokenAuthenticatedUserId,
+        accessTokenAuthenticatedUserId,
       } = res.locals;
-    
+
       const today = new Date();
       const yesterday = new Date(today);
       yesterday.setDate(yesterday.getDate() - 1);
 
       const modelMatch = {
-        user: refreshTokenAuthenticatedUserId,
+        user: accessTokenAuthenticatedUserId,
         // projectReferenceId: projectReferenceId,
         phaseReferenceId: phaseId,
         dateOfDeadline: {

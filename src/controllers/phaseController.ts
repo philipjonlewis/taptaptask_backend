@@ -4,7 +4,7 @@ import asyncHandler from "../handlers/asyncHandler";
 
 import ErrorHandler from "../middleware/errorHandling/modifiedErrorHandler";
 
-import { PhaseModel, TaskModel } from "../model/dbModel";
+import { PhaseModel, TaskModel } from "../middleware/authorization/dbModel";
 
 const createNewPhaseDataController = asyncHandler(
   async (req: Request, res: Response) => {
@@ -25,11 +25,11 @@ const createNewPhaseDataController = asyncHandler(
 const readPhaseDataController = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const { validatedReadPhaseDataId, refreshTokenAuthenticatedUserId } =
+      const { validatedReadPhaseDataId, accessTokenAuthenticatedUserId } =
         res.locals;
 
       const phaseData = await PhaseModel.find({
-        // user: refreshTokenAuthenticatedUserId,
+        user: accessTokenAuthenticatedUserId,
         ...validatedReadPhaseDataId,
       });
 
@@ -45,13 +45,13 @@ const readPhaseDataController = asyncHandler(
 const updatePhaseDataController = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const { refreshTokenAuthenticatedUserId } = res.locals;
+      const { accessTokenAuthenticatedUserId } = res.locals;
       const { updatePhaseDataParameters, updatePhaseDataContent } =
         res.locals.validatedUpdatePhaseData;
 
       const updatedPhaseData = await PhaseModel.updateMany(
         {
-          user: refreshTokenAuthenticatedUserId,
+          user: accessTokenAuthenticatedUserId,
           ...updatePhaseDataParameters,
         },
         { ...updatePhaseDataContent }
@@ -69,13 +69,11 @@ const updatePhaseDataController = asyncHandler(
 const deletePhaseDataController = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const {
-        validatedDeletePhaseDataParams,
-        refreshTokenAuthenticatedUserId,
-      } = res.locals;
+      const { validatedDeletePhaseDataParams, accessTokenAuthenticatedUserId } =
+        res.locals;
 
       const deletedPhaseData = await PhaseModel.findOneAndDelete({
-        user: refreshTokenAuthenticatedUserId,
+        user: accessTokenAuthenticatedUserId,
         ...validatedDeletePhaseDataParams,
       });
 
@@ -94,13 +92,13 @@ const deletePhaseDataController = asyncHandler(
 const changeOrderPhaseDataController = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const { validatedChangeOrderPhaseData, refreshTokenAuthenticatedUserId } =
+      const { validatedChangeOrderPhaseData, accessTokenAuthenticatedUserId } =
         res.locals;
 
       validatedChangeOrderPhaseData.forEach(async (phase: any) => {
         await PhaseModel.findByIdAndUpdate(
           {
-            // user:refreshTokenAuthenticatedUserId,
+            user: accessTokenAuthenticatedUserId,
             _id: phase._id,
             // phaseId: phase.phaseId,
           },

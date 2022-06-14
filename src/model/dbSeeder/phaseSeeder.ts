@@ -1,4 +1,4 @@
-import { PhaseModel } from "../dbModel";
+import { PhaseModel } from "../../middleware/authorization/dbModel";
 
 const phaseDbSeeder = async () => {
   await PhaseModel.insertMany([

@@ -15,7 +15,6 @@ const customErrorMiddleware = async (
   res: Response,
   next: NextFunction
 ) => {
-  console.log(error);
   //Error logging should be universal here
   const status = error?.status || 500;
   const message = error?.message || "Something is wrong";

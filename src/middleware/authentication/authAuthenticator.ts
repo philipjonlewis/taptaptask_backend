@@ -8,7 +8,7 @@ import jwt from "jsonwebtoken";
 import asyncHandler from "../../handlers/asyncHandler";
 import ErrorHandler from "../errorHandling/modifiedErrorHandler";
 
-import { AuthModel } from "../../model/dbModel";
+import { AuthModel } from "../authorization/dbModel";
 
 const signUpAuthenticator = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -21,7 +21,7 @@ const signUpAuthenticator = asyncHandler(
       });
 
       if (doesUserExist) {
-        throw new ErrorHandler(500, "user already exists", {});
+        throw new ErrorHandler(500, "SignUp Authentication Error", {});
       }
 
       return next();
@@ -44,7 +44,7 @@ const logInAuthenticator = asyncHandler(
       if (doesUserExist) {
         return next();
       }
-      throw new ErrorHandler(500, "user already exists", {});
+      throw new ErrorHandler(500, "LogIn Authentication Error", {});
     } catch (error: any) {
       throw new ErrorHandler(error.status, error?.message, {});
     }
@@ -62,6 +62,8 @@ const userCredentialsAuthenticator = asyncHandler(
 
       if (doesUserExist) {
         return next();
+      } else {
+        throw new ErrorHandler(500, "User Credentials Authenticator", {});
       }
     } catch (error: any) {
       throw new ErrorHandler(500, error.message, {});

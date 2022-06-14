@@ -4,7 +4,7 @@ import asyncHandler from "../handlers/asyncHandler";
 
 import ErrorHandler from "../middleware/errorHandling/modifiedErrorHandler";
 
-import { TaskModel } from "../model/dbModel";
+import { TaskModel } from "../middleware/authorization/dbModel";
 
 const createNewTaskDataController = asyncHandler(
   async (req: Request, res: Response) => {

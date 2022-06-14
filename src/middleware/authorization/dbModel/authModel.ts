@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-import authSchema from "../dbSchema/authSchema";
+import authSchema from "../../../model/dbSchema/authSchema";
 
 const Auth = mongoose.model("auth", authSchema);
 
