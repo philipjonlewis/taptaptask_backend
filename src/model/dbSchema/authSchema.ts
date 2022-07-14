@@ -101,30 +101,30 @@ const authSchema = new Schema(
 authSchema.pre("save", async function (next) {
   try {
     // //expires in 28 days
-    const refreshToken = jwt.sign({ token: await this._id }, privateKey, {
-      issuer: await this._id.toString(),
-      subject: await this.email,
+    const refreshToken = jwt.sign({ token: this._id }, privateKey, {
+      issuer: this._id.toString(),
+      subject: this.email,
       audience: "/",
       expiresIn: "672h",
       algorithm: "RS256",
-    });
+    }) as any;
     //expires in 1 day
-    const accessToken = jwt.sign({ token: await this._id }, privateKey, {
-      issuer: await this._id.toString(),
-      subject: await this.email,
+    const accessToken = jwt.sign({ token: this._id }, privateKey, {
+      issuer: this._id.toString(),
+      subject: this.email,
       audience: "/",
       expiresIn: "24h",
       algorithm: "RS256",
-    });
+    }) as any;
 
-    await this.refreshTokens.push(refreshToken);
-    await this.accessTokens.push(accessToken);
+    this.refreshTokens.push(refreshToken);
+    this.accessTokens.push(accessToken);
 
     if (!this.isModified("password")) {
       return next();
     }
 
-    this.password = await bcrypt.hash(await this.password, 10);
+    this.password = await bcrypt.hash(this.password, 10);
 
     return next();
   } catch (error) {

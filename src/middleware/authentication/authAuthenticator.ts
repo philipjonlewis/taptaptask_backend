@@ -37,11 +37,11 @@ const logInAuthenticator = asyncHandler(
     try {
       const { validatedLogInUserData } = res.locals;
 
-      const doesUserExist = await AuthModel.exists({
+      const isUserExisting = await AuthModel.exists({
         email: validatedLogInUserData.email,
       });
 
-      if (doesUserExist) {
+      if (isUserExisting) {
         return next();
       }
       throw new ErrorHandler(500, "LogIn Authentication Error", {});

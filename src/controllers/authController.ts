@@ -1,13 +1,22 @@
 import { Request, Response, RequestHandler, NextFunction } from "express";
 import asyncHandler from "../handlers/asyncHandler";
-
+import fs from "fs";
+import path from "path";
 import ErrorHandler from "../middleware/errorHandling/modifiedErrorHandler";
 
 import { AuthModel } from "../middleware/authorization/dbModel";
 
 import { userAgentCleaner } from "../utils/userAgentCleaner";
+import jwt from "jsonwebtoken";
 
 import bcrypt from "bcryptjs";
+
+const privateKey = fs.readFileSync(
+  path.resolve(
+    __dirname,
+    "../infosec/keys/refreshTokenKeys/refreshTokenPrivate.key"
+  )
+);
 
 const signUpUserDataController = asyncHandler(
   async (req: Request, res: Response) => {
@@ -36,18 +45,10 @@ const logInUserDataController = asyncHandler(
     try {
       const { validatedLogInUserData }: any = res.locals;
 
-      const isUserExisting = await AuthModel.exists({
-        email: validatedLogInUserData.email,
-      }).select("+password");
-
-      if (!isUserExisting) {
-        throw new ErrorHandler(500, "No user like that", {});
-      }
-
       const existingUser = await AuthModel.find({
         email: validatedLogInUserData.email,
       }).select(
-        "+email +username -user -_id -__v -createdAt -updatedAt +password +refreshTokens +accessTokens"
+        "+email +username -user +_id -__v -createdAt -updatedAt +password +refreshTokens +accessTokens"
       );
 
       bcrypt.compare(
@@ -55,35 +56,58 @@ const logInUserDataController = asyncHandler(
         existingUser[0].password,
         async function (err, result) {
           if (result) {
+            // new refresh and access cookie
+
+            const refreshToken = jwt.sign(
+              { token: existingUser[0]._id },
+              privateKey,
+              {
+                issuer: existingUser[0]._id.toString(),
+                subject: existingUser[0].email,
+                audience: "/",
+                expiresIn: "672h",
+                algorithm: "RS256",
+              }
+            ) as any;
+            //expires in 1 day
+            const accessToken = jwt.sign(
+              { token: existingUser[0]._id },
+              privateKey,
+              {
+                issuer: existingUser[0]._id.toString(),
+                subject: existingUser[0].email,
+                audience: "/",
+                expiresIn: "24h",
+                algorithm: "RS256",
+              }
+            ) as any;
+
+            AuthModel.findByIdAndUpdate(existingUser[0]._id, {
+              refreshTokens: [refreshToken],
+              accessTokens: [accessToken],
+            });
+
             return res
               .status(200)
-              .cookie(
-                "authentication-refresh",
-                existingUser[0].refreshTokens[0],
-                {
-                  signed: true,
-                  // expires in 28 days
-                  // expires: new Date(Date.now() + 6048000 * 4),
-                  maxAge: 241920000,
-                  // make secure true upon deployment
-                  secure: false,
-                  httpOnly: false,
-                  sameSite: false,
-                }
-              )
-              .cookie(
-                "authentication-access",
-                existingUser[0].accessTokens[0],
-                {
-                  signed: true,
-                  // expires in 28 days
-                  maxAge: 86400000,
-                  // make secure true upon deployment
-                  secure: false,
-                  httpOnly: false,
-                  sameSite: false,
-                }
-              )
+              .cookie("authentication-refresh", refreshToken, {
+                signed: true,
+                // expires in 28 days
+                // expires: new Date(Date.now() + 6048000 * 4),
+                maxAge: 241920000,
+                // make secure true upon deployment
+                secure: false,
+                httpOnly: false,
+                sameSite: false,
+              })
+              .cookie("authentication-access", accessToken, {
+                signed: true,
+                // expires in 28 days
+                maxAge: 86400000,
+                // make secure true upon deployment
+                secure: false,
+                httpOnly: false,
+                sameSite: false,
+              })
               .json({
                 code: 200,
                 status: true,

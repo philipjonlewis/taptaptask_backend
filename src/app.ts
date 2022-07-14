@@ -106,7 +106,6 @@ app.listen(process.env.PORT, () => {
   console.log(`App listening on port ${process.env.PORT}!`);
 });
 
-// Authentication - check is user from cookies exist 
+// Authentication - check is user from cookies exist
 
 // Authorization - Check if user is free ser or premium.
-
